@@ -1053,15 +1053,15 @@ var communesData = [
     "commune": "Flexanville",
     "lat": 48.85527515,
     "lon": 1.742832344,
-    "color": "rouge",
+    "color": "orange",
     "tarifs": {
-      "Hauteur d'homme nid visible moins de 3m": "! Hors secteur d'intervention !",
-      "Nid non visible moins de 3m - en terre ou coffret volet roulant": "! Hors secteur d'intervention !",
-      "Intervention toiture - chien-assis + reco caméra accès intérieur": "! Hors secteur d'intervention !",
-      "Nid dans un arbre : hauteur entre 6 et 10 mètres": "! Hors secteur d'intervention !",
-      "Nid dans un arbre : hauteur entre 10 mètres et 15 mètres": "! Hors secteur d'intervention !",
-      "Nid dans un arbre : hauteur entre 15 mètres et 20 mètres": "! Hors secteur d'intervention !",
-      "Nid dans un arbre : hauteur entre 20 mètres et 30 mètres": "! Hors secteur d'intervention !"
+      "Hauteur d'homme nid visible moins de 3m": "Entre 143 € et 153 €",
+      "Nid non visible moins de 3m - en terre ou coffret volet roulant": "Entre 153 € et 163 €",
+      "Intervention toiture - chien-assis + reco caméra accès intérieur": "Entre 173 € et 193 €",
+      "Nid dans un arbre : hauteur entre 6 et 10 mètres": "183 €",
+      "Nid dans un arbre : hauteur entre 10 mètres et 15 mètres": "203 €",
+      "Nid dans un arbre : hauteur entre 15 mètres et 20 mètres": "223 €",
+      "Nid dans un arbre : hauteur entre 20 mètres et 30 mètres": "243 €"
     }
   },
   {

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<title>Carte des Yvelines</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<style>
+  html, body { margin:0; padding:0; height:100%; }
+  #map { width:100%; height:100%; }
+  #search {
+    position:absolute; top:calc(100vh/12); left:50%; transform:translateX(-50%);
+    width:360px; max-width:85%; padding:12px 14px;
+    font-family:Helvetica,sans-serif; font-size:20px;
+    border:2px solid #ccc; border-radius:25px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  }
+  #suggestions {
+    position:absolute; top:calc(100vh/12 + 52px); left:50%; transform:translateX(-50%);
+    width:360px; max-width:85%; background:white;
+    border:1px solid #ccc; border-radius:8px;
+    max-height:150px; overflow-y:auto;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  }
+  .suggestion {
+    padding:8px 12px; cursor:pointer;
+    font-family:Helvetica,sans-serif; font-size:20px;
+  }
+  .suggestion:hover { background:#f0f0f0; }
+
+  #info {
+    display:none; position:absolute; top:30%; left:5%;
+    width:45%; max-width:600px; background:white; border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2); padding:12px;
+    font-family:Helvetica,sans-serif; font-size:14px; color:black;
+    z-index:1000; max-height:65%; overflow-y:auto;
+  }
+  #info .info-header {
+    margin:0 0 8px 0; font-size:20px; font-weight:bold;
+  }
+  #info .info-subtitle {
+    margin:0 0 12px 0; font-size:15px; font-weight:bold;
+  }
+  #info .info-list { list-style:none; padding:0; margin:0; }
+  #info .info-list li {
+    margin:16px 0; font-size:21px; white-space:nowrap;
+  }
+  #info .info-list li.hors {
+    color:red; font-weight:bold;
+  }
+  #info hr {
+    margin:16px 0; border:none; border-top:1px solid #ccc;
+  }
+  #logo {
+    position:absolute; top:40px; right:40px;
+    width:120px; z-index:1001; pointer-events:none;
+  }
+</style>
+</head>
+<body>
+<img id="logo" src="image.png" alt="Logo"/>
+<input type="text" id="search" placeholder="Rechercher une commune" autocomplete="off"/>
+<div id="suggestions"></div>
+<div id="info"></div>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="communes_data.js"></script>
+<script>
+const colorMap = { vert:'#28a745', jaune:'#ffc107', orange:'#fd7e14', rouge:'#dc3545' };
+var map = L.map('map').setView([48.8566,2.0474],9);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+var logoIcon = L.icon({ iconUrl:'image.png', iconSize:[80,80], iconAnchor:[40,80] });
+var marker, infoPanel=document.getElementById('info');
+function normalize(s){
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-' ]/g,'').toLowerCase();
+}
+document.getElementById('search').addEventListener('input',function(){
+  var val=normalize(this.value), box=document.getElementById('suggestions');
+  box.innerHTML=''; if(!val) return;
+  communesData.filter(c=>normalize(c.commune).startsWith(val)).slice(0,10)
+    .forEach(c=>{
+      var d=document.createElement('div');
+      d.className='suggestion'; d.textContent=c.commune;
+      d.onclick=function(){
+        selectCommune(c); box.innerHTML=''; document.getElementById('search').value=c.commune;
+      };
+      box.appendChild(d);
+    });
+});
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function selectCommune(c){
+  if(marker) map.removeLayer(marker);
+  marker = L.marker([c.lat,c.lon],{icon:logoIcon}).addTo(map);
+  map.setView([c.lat,c.lon],13);
+  infoPanel.style.display='block';
+  infoPanel.innerHTML = '<div class="info-header">' + c.commune + '</div>';
+  var zn = cap(c.color);
+  infoPanel.innerHTML += '<div class="info-subtitle">Zone: <span style="color:' + colorMap[c.color] + '; font-weight:bold;">' + zn + '</span></div>';
+  var keys = Object.keys(c.tarifs),
+      firstThree = keys.slice(0,3),
+      treeItems = keys.filter(k=>k.toLowerCase().includes('nid dans un arbre')),
+      horsItems = keys.filter(k=>k.toLowerCase().includes('hors secteur'));
+  // First three
+  infoPanel.innerHTML += '<ul class="info-list">';
+  firstThree.forEach(k => {
+    infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + c.tarifs[k] + '</li>';
+  });
+  infoPanel.innerHTML += '</ul><hr>';
+  // Nid dans un arbre
+  infoPanel.innerHTML += '<ul class="info-list">';
+  treeItems.forEach(k => {
+    infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + c.tarifs[k] + '</li>';
+  });
+  infoPanel.innerHTML += '</ul>';
+  // Hors secteur
+  if(horsItems.length) {
+    infoPanel.innerHTML += '<ul class="info-list">';
+    horsItems.forEach(k => {
+      infoPanel.innerHTML += '<li class="hors">! ' + k + ': ' + c.tarifs[k] + ' !</li>';
+    });
+    infoPanel.innerHTML += '</ul>';
+  }
+}
+</script>
+</body>
+</html>

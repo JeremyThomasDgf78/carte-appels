@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<title>Carte des Yvelines</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<style>
+  html, body { margin:0; padding:0; height:100%; }
+  #map { width:100%; height:100%; }
+  #search {
+    position:absolute; top:calc(100vh/12); left:50%; transform:translateX(-50%);
+    width:360px; max-width:85%; padding:12px 14px;
+    font-family:Helvetica,sans-serif; font-size:20px;
+    border:2px solid #ccc; border-radius:25px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  }
+  #suggestions {
+    position:absolute; top:calc(100vh/12 + 52px); left:50%; transform:translateX(-50%);
+    width:360px; max-width:85%; background:white;
+    border:1px solid #ccc; border-radius:8px;
+    max-height:150px; overflow-y:auto;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  }
+  .suggestion {
+    padding:8px 12px; cursor:pointer;
+    font-family:Helvetica,sans-serif; font-size:20px;
+  }
+  .suggestion:hover { background:#f0f0f0; }
+
+  #info {
+  background: #fff !important;
+  opacity: 1 !important;
+  backdrop-filter: none;
+
+    display:none; position:absolute; top:30%; left:5%;
+    width:45%; max-width:600px;  border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2); padding:12px;
+    font-family:Helvetica,sans-serif; font-size:14px; color:black;
+    z-index:1000; max-height:65%; overflow-y:auto;
+    
+    
+  }
+  #info .info-header {
+    margin:0 0 8px 0; font-size:20px; font-weight:bold;
+  }
+  #info .info-subtitle {
+    margin:0 0 12px 0; font-size:15px; font-weight:bold;
+  }
+  #info .info-list { list-style:none; padding:0; margin:0; }
+  #info .info-list li {
+    margin:16px 0; font-size:21px; white-space:nowrap;
+  }
+  #info .info-list li.hors {
+    color:red; font-weight:bold;
+  }
+  #info hr {
+    margin:16px 0; border:none; border-top:1px solid #ccc;
+  }
+  #logo {
+    position:absolute; top:40px; right:40px;
+    width:120px; z-index:1001; pointer-events:none;
+  }
+  /* Fenêtre intervention secteur 92 (Hauts-de-Seine) */
+  #info92 {
+  background: #fff !important;
+  opacity: 1 !important;
+  backdrop-filter: none;
+
+    position: fixed;
+    bottom: 34px;
+    right: 34px;
+    
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-radius: 22px;
+    padding: 18px 24px 14px 24px;
+    
+    min-width: 220px;
+    max-width: 320px;
+    font-family: Helvetica, sans-serif;
+    z-index: 2002;
+    
+    pointer-events: none;
+  }
+  #info92 .titre92 {
+    font-size: 15px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  #info92 ul {
+    margin: 0; padding: 0; list-style-type: none; text-align: center;
+  }
+  #info92 li {
+    font-size: 16px;
+    color: #111;
+    margin-bottom: 6px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-align: center;
+  }
+  @media (max-width: 700px) {
+    #info92 {
+  background: #fff !important;
+  opacity: 1 !important;
+  backdrop-filter: none;
+
+      right: 5vw; left: unset; bottom: 10vw; padding: 12px 8px 8px 8px; min-width:120px; font-size:12px;
+    }
+    #info92 .titre92 { font-size: 12px; }
+    #info92 li { font-size: 13px; }
+  }
+  .info-btn-row {
+    margin-top: 36px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+#info92 {
+  background: #fff !important;
+  opacity: 1 !important;
+  backdrop-filter: none;
+
+    min-width: 140px;
+    max-width: 180px;
+    padding: 10px 12px 8px 12px;
+    font-size: 13px;
+}
+#info92 .titre92 {
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+#info92 .ajout-tarif-92 {
+    color: #e62424;
+    font-weight: bold;
+    font-size: 13px;
+    margin: 10px 0 14px 0;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+#info92 ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    text-align: center;
+}
+#info92 li {
+    font-size: 12px;
+    color: #111;
+    margin-bottom: 4px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-align: center;
+}
+
+</style>
+</head>
+<body>
+<img id="logo" src="image.png" alt="Logo"/>
+<input type="text" id="search" placeholder="Rechercher une commune" autocomplete="off"/>
+<div id="suggestions"></div>
+<div id="info"></div>
+<div id="map"></div>
+
+<!-- Fenêtre info92 secteur 92 (Hauts-de-Seine) -->
+<div id="info92">
+  <div class="titre92">Intervention possible<br>Secteur 92 (Hauts-de-Seine)</div>
+  <div class="ajout-tarif-92">Ajouter 10 à 20 € au tarif</div>
+  <ul>
+    <li>Chaville</li>
+    <li>Ville-d’Avray</li>
+    <li>Vaucresson</li>
+    <li>Garches</li>
+    <li>Marnes-la-Coquette</li>
+    <li>Saint-Cloud</li>
+    <li>Sèvres</li>
+  </ul>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="communes_data.js"></script>
+<script>
+const colorMap = { vert:'#28a745', jaune:'#ffc107', orange:'#fd7e14', rouge:'#dc3545' };
+// Ajout CCHVC
+const communesCCHVC = [
+  "Chevreuse",
+  "Choisel",
+  "Dampierre-En-Yvelines",
+  "Le Mesnil-Saint-Denis",
+  "Lévis-Saint-Nom",
+  "Milon-La-Chapelle",
+  "Saint-Forget",
+  "Saint-Lambert-Des-Bois",
+  "Saint-Rémy-Lès-Chevreuse",
+  "Senlisse"
+];
+var map = L.map('map').setView([48.8566,2.0474],9);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+var logoIcon = L.icon({ iconUrl:'image.png', iconSize:[80,80], iconAnchor:[40,80] });
+var marker, infoPanel=document.getElementById('info');
+function normalize(s){
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-' ]/g,'').toLowerCase();
+}
+document.getElementById('search').addEventListener('input',function(){
+  var val=normalize(this.value), box=document.getElementById('suggestions');
+  box.innerHTML=''; if(!val) return;
+  communesData.filter(c=>normalize(c.commune).startsWith(val)).slice(0,10)
+    .forEach(c=>{
+      var d=document.createElement('div');
+      d.className='suggestion'; d.textContent=c.commune;
+      d.onclick=function(){
+        selectCommune(c); box.innerHTML=''; document.getElementById('search').value=c.commune;
+      };
+      box.appendChild(d);
+    });
+});
+// Ajout gestion de la touche Entrée
+document.getElementById('search').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter') {
+    var val = normalize(this.value);
+    var commune = communesData.find(c => normalize(c.commune) === val)
+              || communesData.find(c => normalize(c.commune).startsWith(val));
+    if(commune) {
+      selectCommune(commune);
+      document.getElementById('suggestions').innerHTML = '';
+    }
+  }
+});
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+// --- Boutons inversés, espace doublé, nouvelle classe info-btn-row ---
+function selectCommune(c){
+  if(marker) map.removeLayer(marker);
+  marker = L.marker([c.lat,c.lon],{icon:logoIcon}).addTo(map);
+  map.setView([c.lat,c.lon],13);
+  infoPanel.style.display='block';
+  // Subvention CCHVC si commune concernée
+  let subvention = '';
+  if(communesCCHVC.map(x => x.toLowerCase()).includes(c.commune.toLowerCase())) {
+    subvention = '<span style="color:#388e3c;font-weight:bold;font-size:16px;"> – (subvention CCHVC frelon asiatique)</span>';
+  }
+  infoPanel.innerHTML = '<div class="info-header">' + c.commune + subvention + '</div>';
+  var zn = cap(c.color);
+  infoPanel.innerHTML += '<div class="info-subtitle">Zone: <span style="color:' + colorMap[c.color] + '; font-weight:bold;">' + zn + '</span></div>';
+  var keys = Object.keys(c.tarifs),
+      firstThree = keys.slice(0,3),
+      treeItems = keys.filter(k=>k.toLowerCase().includes('nid dans un arbre')),
+      horsItems = keys.filter(k=>k.toLowerCase().includes('hors secteur'));
+  // First three
+  infoPanel.innerHTML += '<ul class="info-list">';
+  firstThree.forEach(k => {
+    infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + c.tarifs[k] + '</li>';
+  });
+  infoPanel.innerHTML += '</ul><hr>';
+  // Nid dans un arbre
+  infoPanel.innerHTML += '<ul class="info-list">';
+  treeItems.forEach(k => {
+    infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + c.tarifs[k] + '</li>';
+  });
+  infoPanel.innerHTML += '</ul>';
+  // Hors secteur
+  if(horsItems.length) {
+    infoPanel.innerHTML += '<ul class="info-list">';
+    horsItems.forEach(k => {
+      infoPanel.innerHTML += '<li class="hors">! ' + k + ': ' + c.tarifs[k] + ' !</li>';
+    });
+    infoPanel.innerHTML += '</ul>';
+  }
+  // ----- Deux boutons inversés, espace doublé, margin-bottom -----
+  infoPanel.innerHTML += `
+    <div class="info-btn-row">
+      <a href="https://destructionguepesetfrelons.organilog.com/planning" target="_blank"
+        style="background:#08813e;color:#fff;font-size:14px;padding:6px 16px;border-radius:18px;border:none;
+        box-shadow:0 1px 8px rgba(0,0,0,0.10);cursor:pointer;display:inline-block;text-decoration:none;">
+        Consulter le planning
+      </a>
+      <a href="https://destructionguepesetfrelons.organilog.com/client_edit.php" target="_blank"
+        style="background:#0760e5;color:#fff;font-size:14px;padding:6px 16px;border-radius:18px;border:none;
+        box-shadow:0 1px 8px rgba(0,0,0,0.10);cursor:pointer;display:inline-block;text-decoration:none;">
+        Ajouter le client dans Organilog
+      </a>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<title>Carte des Yvelines</title>
+<link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
+<style>
+  html, body { margin:0; padding:0; height:100%; }
+  #map { width:100%; height:100%; }
+  #search {
+    position:absolute; top:calc(100vh/12); left:50%; transform:translateX(-50%);
+    width:360px; max-width:85%; padding:12px 14px;
+    font-family:Helvetica,sans-serif; font-size:20px;
+    border:2px solid #ccc; border-radius:25px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  }
+  #suggestions {
+    position:absolute; top:calc(100vh/12 + 52px); left:50%; transform:translateX(-50%);
+    width:360px; max-width:85%; background:white;
+    border:1px solid #ccc; border-radius:8px;
+    max-height:150px; overflow-y:auto;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  }
+  .suggestion {
+    padding:8px 12px; cursor:pointer;
+    font-family:Helvetica,sans-serif; font-size:20px;
+  }
+  .suggestion:hover { background:#f0f0f0; }
+
+  #info {
+    background: #fff !important;
+    opacity: 1 !important;
+    backdrop-filter: none;
+    display:none; position:absolute; top:30%; left:5%;
+    width:45%; max-width:600px;  border-radius:12px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.18); padding:16px 20px;
+    font-family:Helvetica,sans-serif; font-size:15px; color:black;
+    z-index:1000; max-height:65%; overflow-y:auto;
+  }
+  #info .info-header {
+    margin:0 0 8px 0; font-size:22px; font-weight:bold;
+  }
+  #info .info-subtitle {
+    margin:0 0 14px 0; font-size:16px; font-weight:bold;
+  }
+  #info .info-list { list-style:none; padding:0; margin:0; }
+  #info .info-list li {
+    margin:16px 0; font-size:22px; white-space:nowrap;
+  }
+  #info .info-list li.hors {
+    color:red; font-weight:bold;
+  }
+  #info hr {
+    margin:16px 0; border:none; border-top:1px solid #ccc;
+  }
+  #logo {
+    position:absolute; top:40px; right:40px;
+    width:120px; z-index:1001; pointer-events:none;
+  }
+
+  .info-btn-row {
+    margin-top: 36px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  /* Boutons x1.5 */
+  .info-btn-row a {
+    font-size: 21px !important;
+    padding: 12px 24px !important;
+    border-radius: 27px !important;
+  }
+
+  /* Fenêtre consigne bas droite */
+  #consigne-fixe {
+    position: fixed;
+    bottom: 28px;
+    right: 34px;
+    width: 350px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+    padding: 24px 20px 20px 24px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    color: #222;
+    z-index: 2001;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border: 1.2px solid #e0e0e0;
+  }
+  #consigne-fixe .pro {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  #consigne-fixe .paiement {
+    color: #222;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+  #consigne-fixe .infos {
+    font-weight: normal;
+    color: #222;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  @media (max-width: 700px) {
+    #consigne-fixe { width: 95vw; right: 2vw; padding: 10px 6px 12px 14px; font-size:14px; }
+    #consigne-fixe .pro { font-size: 15px;}
+    #consigne-fixe .paiement { font-size: 14px;}
+    #consigne-fixe .infos { font-size: 13px;}
+  }
+
+    .info-btn-row {
+        flex-direction: column !important;
+        align-items: center;
+        gap: 11px !important;
+    }
+    .info-btn-row a {
+        font-size: 14px !important;
+        padding: 8px 16px !important;
+        border-radius: 19px !important;
+        min-width: 120px !important;
+        max-width: 90%;
+        text-align: center !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    
+    #consigne-fixe {
+      width: 230px !important;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+      padding: 18px 10px 12px 13px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 8px !important;
+      color: #222;
+      z-index: 2001;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1.2px solid #e0e0e0;
+      white-space: normal;
+      height: auto !important;
+    }
+    #consigne-fixe .pro {
+      color: #dc3545;
+      font-weight: bold;
+      font-size: 9px !important;
+      margin-bottom: 4px;
+    }
+    #consigne-fixe .paiement {
+      color: #222;
+      font-weight: bold;
+      font-size: 8px !important;
+      margin-bottom: 2px;
+    }
+    #consigne-fixe .infos {
+      font-weight: normal;
+      color: #222;
+      font-size: 7px !important;
+      margin-bottom: 2px;
+    }
+    
+    .info-btn-row {
+        flex-direction: column !important;
+        align-items: center;
+        gap: 14px !important;
+    }
+    .info-btn-row a {
+        font-size: 17.5px !important;
+        padding: 10px 20px !important;
+        border-radius: 24px !important;
+        min-width: 140px !important;
+        max-width: 92%;
+        text-align: center !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    
+    #consigne-fixe {
+      width: 340px !important;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+      padding: 20px 14px 16px 16px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 13px !important;
+      color: #222;
+      z-index: 2001;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border: 1.2px solid #e0e0e0;
+      white-space: normal;
+      height: auto !important;
+    }
+    #consigne-fixe .pro {
+      color: #dc3545;
+      font-weight: bold;
+      font-size: 14px !important;
+      margin-bottom: 4px;
+    }
+    #consigne-fixe .paiement {
+      color: #222;
+      font-weight: bold;
+      font-size: 13px !important;
+      margin-bottom: 2px;
+    }
+    #consigne-fixe .infos {
+      font-weight: normal;
+      color: #222;
+      font-size: 12px !important;
+      margin-bottom: 2px;
+    }
+    </style>
+</head>
+<body>
+<img alt="Logo" id="logo" src="image.png"/>
+<input autocomplete="off" id="search" placeholder="Rechercher une commune" type="text"/>
+<div id="suggestions"></div>
+<div id="info"></div>
+<div id="map"></div>
+<!-- Fenêtre consigne fixe en bas à droite -->
+<div id="consigne-fixe">
+<div class="pro">À demander si PROFESSIONNEL</div>
+<div class="paiement">Paiement sur place = tarif TTC affiché +20 €</div>
+<div class="paiement">Paiement 30 jours nets = tarif TTC affiché +40 €</div>
+<div class="infos">Règlement Chèque accepté pour les pros</div>
+<div class="infos">Toujours donner ensuite le tarif Hors Taxes = Tarif TTC / 1,2</div>
+</div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="communes_data.js"></script>
+<script>
+const colorMap = { vert:'#28a745', jaune:'#ffc107', orange:'#fd7e14', rouge:'#dc3545', bleue: "#007bff" };
+const communesCCHVC = [
+  "Chevreuse", "Choisel", "Dampierre-En-Yvelines", "Le Mesnil-Saint-Denis", "Lévis-Saint-Nom",
+  "Milon-La-Chapelle", "Saint-Forget", "Saint-Lambert-Des-Bois", "Saint-Rémy-Lès-Chevreuse", "Senlisse"
+];
+var map = L.map('map').setView([48.8566,2.0474],9);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+var logoIcon = L.icon({ iconUrl:'image.png', iconSize:[80,80], iconAnchor:[40,80] });
+var marker, infoPanel=document.getElementById('info');
+function normalize(s){
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-' ]/g,'').toLowerCase();
+}
+document.getElementById('search').addEventListener('input',function(){
+  var val=normalize(this.value), box=document.getElementById('suggestions');
+  box.innerHTML=''; if(!val) return;
+  communesData.filter(c=>normalize(c.commune).startsWith(val)).slice(0,10)
+    .forEach(c=>{
+      var d=document.createElement('div');
+      d.className='suggestion'; d.textContent=c.commune;
+      d.onclick=function(){
+        selectCommune(c); box.innerHTML=''; document.getElementById('search').value=c.commune;
+      };
+      box.appendChild(d);
+    });
+});
+// Ajout gestion de la touche Entrée
+document.getElementById('search').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter') {
+    var val = normalize(this.value);
+    var commune = communesData.find(c => normalize(c.commune) === val)
+              || communesData.find(c => normalize(c.commune).startsWith(val));
+    if(commune) {
+      selectCommune(commune);
+      document.getElementById('suggestions').innerHTML = '';
+    }
+  }
+});
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function selectCommune(c){
+  if(marker) map.removeLayer(marker);
+  marker = L.marker([c.lat,c.lon],{icon:logoIcon}).addTo(map);
+  map.setView([c.lat,c.lon],13);
+  infoPanel.style.display='block';
+  // Subvention CCHVC si commune concernée
+  let subvention = '';
+  if(communesCCHVC.map(x => x.toLowerCase()).includes(c.commune.toLowerCase())) {
+    subvention = '<span style="color:#388e3c;font-weight:bold;font-size:16px;"> – (subvention CCHVC frelon asiatique)</span>';
+  }
+  // Ajout mention zone bleue
+  let zn = cap(c.color);
+  let zoneMention = '';
+  if (c.color === "bleue") {
+    zoneMention = ' <span style="font-size:15px;font-weight:normal;color:#007bff;">(hors département mais intervention possible)</span>';
+  }
+  infoPanel.innerHTML = '<div class="info-header">' + c.commune + subvention + '</div>';
+  infoPanel.innerHTML += '<div class="info-subtitle">Zone: <span style="color:' + colorMap[c.color] + '; font-weight:bold;">' + zn + '</span>' + zoneMention + '</div>';
+  var keys = Object.keys(c.tarifs),
+      firstThree = keys.slice(0,3),
+      treeItems = keys.filter(k=>k.toLowerCase().includes('nid dans un arbre')),
+      horsItems = keys.filter(k=>k.toLowerCase().includes('hors secteur'));
+  // First three
+  infoPanel.innerHTML += '<ul class="info-list">';
+  firstThree.forEach(k => {
+    infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + c.tarifs[k] + '</li>';
+  });
+  infoPanel.innerHTML += '</ul><hr>';
+  // Nid dans un arbre
+  infoPanel.innerHTML += '<ul class="info-list">';
+  treeItems.forEach(k => {
+    infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + c.tarifs[k] + '</li>';
+  });
+  infoPanel.innerHTML += '</ul>';
+  // Hors secteur
+  if(horsItems.length) {
+    infoPanel.innerHTML += '<ul class="info-list">';
+    horsItems.forEach(k => {
+      infoPanel.innerHTML += '<li class="hors">! ' + k + ': ' + c.tarifs[k] + ' !</li>';
+    });
+    infoPanel.innerHTML += '</ul>';
+  }
+  styleTarifsRouges();
+  infoPanel.innerHTML += `
+    <div class="info-btn-row">
+      <a href="https://destructionguepesetfrelons.organilog.com/planning" target="_blank"
+        style="background:#08813e;color:#fff;font-size:21px;padding:12px 24px;border-radius:27px;border:none;
+        box-shadow:0 1px 8px rgba(0,0,0,0.10);cursor:pointer;display:inline-block;text-decoration:none;">
+        Consulter le planning
+      </a>
+      <a href="https://destructionguepesetfrelons.organilog.com/client_edit.php" target="_blank"
+        style="background:#0760e5;color:#fff;font-size:21px;padding:12px 24px;border-radius:27px;border:none;
+        box-shadow:0 1px 8px rgba(0,0,0,0.10);cursor:pointer;display:inline-block;text-decoration:none;">
+        Ajouter le client dans Organilog
+      </a>
+    </div>
+  `;
+}
+function styleTarifsRouges() {
+  const infoList = document.querySelectorAll('#info .info-list li');
+  infoList.forEach(li => {
+    li.innerHTML = li.innerHTML.replace(/(\d+[ \u202f]?(?:€|euros))/gi, '<span style="color:red;font-weight:bold;">$1</span>');
+  });
+}
+</script>
+</body>
+</html>

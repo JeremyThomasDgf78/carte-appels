@@ -3,224 +3,196 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Réglages — Tarifs DGF 78</title>
+<title>Réglages — DGF 78</title>
 <style>
-  :root { --rouge:#dc3545; --vert:#28a745; --jaune:#ffc107; --orange:#fd7e14; --bleu:#007bff; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:Helvetica,Arial,sans-serif; background:#f4f5f7; color:#222; }
-  header { background:#1d1d1d; color:#fff; padding:16px 20px; display:flex; align-items:center; gap:14px; }
-  header img { height:42px; }
-  header h1 { font-size:20px; margin:0; }
-  header a { margin-left:auto; color:#fff; text-decoration:none; background:#08813e; padding:9px 16px; border-radius:22px; font-size:15px; }
-  .wrap { max-width:900px; margin:0 auto; padding:18px 16px 80px; }
+  :root{
+    --glass:rgba(22,26,34,0.66);
+    --glass-light:rgba(255,255,255,0.07);
+    --bd:rgba(255,255,255,0.2);
+    --bd-soft:rgba(255,255,255,0.12);
+    --txt:#fff; --txt-soft:rgba(255,255,255,0.82); --txt-mute:rgba(255,255,255,0.5);
+    --jaune:#fbbf24; --rouge:#dc2626; --vert:#22c55e; --bleu:#2563eb;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; min-height:100%; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; color:var(--txt);}
+  body{ background:#11151c; background-image:radial-gradient(circle at 15% 10%,rgba(251,191,36,0.14),transparent 40%),radial-gradient(circle at 85% 90%,rgba(220,38,38,0.16),transparent 42%),linear-gradient(150deg,#141a24,#1d1726 55%,#241420); background-attachment:fixed; padding-bottom:120px; }
+  .glass{ background:var(--glass); -webkit-backdrop-filter:blur(28px) saturate(160%); backdrop-filter:blur(28px) saturate(160%); border:0.5px solid var(--bd); box-shadow:inset 0 1px 0 rgba(255,255,255,0.16),0 10px 40px rgba(0,0,0,0.3); }
 
-  .alert { background:#fff3cd; border:1px solid #ffe08a; color:#7a5b00; padding:14px 16px; border-radius:10px; font-size:15px; margin-bottom:18px; line-height:1.4; }
-  .alert strong { color:#9a4b00; }
+  header{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:14px; padding:16px 20px; border-bottom:0.5px solid var(--bd-soft); -webkit-backdrop-filter:blur(28px); backdrop-filter:blur(28px); background:rgba(17,21,28,0.7); }
+  header img{ height:36px; border-radius:8px; }
+  header h1{ font-size:19px; font-weight:600; margin:0; }
+  header a{ margin-left:auto; color:#fff; text-decoration:none; background:rgba(255,255,255,0.1); border:0.5px solid var(--bd); padding:10px 15px; border-radius:14px; font-size:14px; font-weight:500; }
+  .wrap{ max-width:760px; margin:0 auto; padding:18px 16px; }
 
-  .tabs { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
-  .tab { flex:1; min-width:140px; padding:12px; text-align:center; background:#e9ebef; border:none; border-radius:10px; font-size:15px; font-weight:bold; cursor:pointer; color:#555; }
-  .tab.active { background:#08813e; color:#fff; }
+  .alert{ border-radius:16px; padding:14px 16px; font-size:14px; line-height:1.55; margin-bottom:18px; background:rgba(251,191,36,0.12); border:0.5px solid rgba(251,191,36,0.35); color:#ffe9b8; }
+  .alert b{ color:#fff; }
 
-  .panel { display:none; background:#fff; border-radius:12px; padding:18px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-  .panel.active { display:block; }
+  .tabs{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .tab{ flex:1; min-width:130px; padding:13px; border-radius:14px; border:0.5px solid var(--bd-soft); background:rgba(255,255,255,0.05); color:var(--txt-mute); font-size:14px; font-weight:500; cursor:pointer; }
+  .tab.active{ background:rgba(255,255,255,0.14); color:#fff; border-color:var(--bd); }
 
-  .dot { display:inline-block; width:14px; height:14px; border-radius:50%; vertical-align:middle; margin-right:6px; }
-  label { font-size:14px; font-weight:bold; display:block; margin:14px 0 6px; }
-  select, input[type=text] { width:100%; padding:11px 12px; font-size:16px; border:1.5px solid #ccc; border-radius:9px; }
+  .panel{ display:none; border-radius:20px; padding:20px; }
+  .panel.active{ display:block; }
+  label{ font-size:14px; font-weight:500; display:block; margin:14px 0 8px; }
+  label:first-child{ margin-top:0; }
+  input[type=text],select{ width:100%; padding:13px 15px; font-size:16px; border-radius:13px; border:0.5px solid var(--bd); background:rgba(255,255,255,0.07); color:#fff; outline:none; }
+  input[type=text]::placeholder{ color:var(--txt-mute); }
+  select option{ background:#1d2330; color:#fff; }
+  .hint{ font-size:13px; color:var(--txt-mute); margin-top:8px; }
 
-  table { width:100%; border-collapse:collapse; margin-top:8px; }
-  th, td { text-align:left; padding:9px 8px; border-bottom:1px solid #eee; font-size:14px; }
-  th { background:#fafafa; }
-  td input { width:90px; padding:7px 8px; font-size:15px; border:1.5px solid #ccc; border-radius:7px; text-align:right; }
+  .sugg{ border-radius:13px; overflow:hidden; margin-top:6px; border:0.5px solid var(--bd-soft); background:rgba(255,255,255,0.06); max-height:200px; overflow-y:auto; }
+  .sugg div{ padding:11px 14px; cursor:pointer; font-size:15px; color:var(--txt-soft); border-bottom:0.5px solid var(--bd-soft); display:flex; align-items:center; gap:9px; }
+  .sugg div:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  .dot{ width:11px; height:11px; border-radius:50%; }
+  .badge{ font-size:12px; padding:4px 11px; border-radius:14px; color:#fff; font-weight:500; }
 
-  .btn { display:inline-block; border:none; border-radius:24px; padding:13px 22px; font-size:16px; font-weight:bold; cursor:pointer; color:#fff; }
-  .btn-save { background:#08813e; }
-  .btn-export { background:#0760e5; }
-  .btn-row { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #ddd; padding:12px 16px; display:flex; gap:12px; justify-content:center; z-index:50; flex-wrap:wrap; }
+  table{ width:100%; border-collapse:collapse; margin-top:10px; }
+  td{ padding:11px 6px; border-bottom:0.5px solid var(--bd-soft); font-size:14px; color:var(--txt-soft); }
+  td input{ width:120px; padding:10px 12px; font-size:15px; border-radius:11px; text-align:right; }
 
-  .pending { color:var(--rouge); font-weight:bold; font-size:13px; align-self:center; }
-  .ok { color:var(--vert); font-weight:bold; font-size:13px; align-self:center; }
-  .hint { font-size:13px; color:#777; margin-top:4px; }
-  .commune-current { margin-top:12px; font-size:16px; }
-  .exc-row { display:flex; gap:8px; align-items:center; margin:6px 0; flex-wrap:wrap; }
-  .exc-row span.lab { flex:1; min-width:200px; font-size:14px; }
-  .badge { font-size:12px; padding:3px 9px; border-radius:12px; color:#fff; font-weight:bold; }
-  @media(max-width:600px){ header h1{font-size:16px;} th,td{font-size:13px;padding:7px 5px;} td input{width:74px;} }
+  .exc-row{ display:flex; gap:10px; align-items:center; margin:8px 0; flex-wrap:wrap; }
+  .exc-row .l{ flex:1; min-width:200px; font-size:14px; color:var(--txt-soft); }
+  .exc-row input{ width:110px; }
+
+  .btn{ border:0.5px solid var(--bd); border-radius:14px; padding:13px 20px; font-size:15px; font-weight:500; cursor:pointer; color:#fff; -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); }
+  .btn-primary{ background:rgba(37,99,235,0.85); }
+  .btn-ghost{ background:rgba(255,255,255,0.08); }
+  .btn-export{ background:rgba(34,197,94,0.85); }
+
+  .footer{ position:fixed; bottom:0; left:0; right:0; z-index:30; padding:14px 18px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; -webkit-backdrop-filter:blur(28px); backdrop-filter:blur(28px); background:rgba(17,21,28,0.78); border-top:0.5px solid var(--bd-soft); }
+  .status{ font-size:13px; font-weight:500; }
+  .status.pending{ color:var(--jaune); }
+  .status.ok{ color:var(--vert); }
+
+  @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){ .glass,header,.footer{ background:rgba(20,24,32,0.95); } }
+  @media(max-width:600px){ header h1{font-size:16px;} td input{width:90px;} }
 </style>
 </head>
 <body>
 <header>
   <img src="image.png" alt="DGF 78"/>
   <h1>Réglages des tarifs</h1>
-  <a href="index.html">← Retour à la carte</a>
+  <a href="index.html" id="backLink">&#8592; Carte</a>
 </header>
 
 <div class="wrap">
-  <div class="alert" id="alertBox">
-    <strong>Important :</strong> vos modifications sont temporaires tant qu'elles ne sont pas exportées.
-    Après vos changements, cliquez sur <strong>Exporter</strong> en bas, puis redéposez le fichier
-    <code>data.js</code> sur GitHub. <strong>Rien ne sera visible en ligne sans cet export + redépôt.</strong>
+  <div class="alert">
+    <b>Important :</b> les modifications sont gardées automatiquement ici, mais ne seront <b>en ligne</b> qu'après avoir cliqué sur <b>Exporter data.js</b> (en bas) puis redéposé le fichier sur GitHub.
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-p="p-commune">Couleur d'une commune</button>
-    <button class="tab" data-p="p-zone">Tarifs par zone</button>
-    <button class="tab" data-p="p-exc">Exception par commune</button>
+    <button class="tab active" data-p="p1">Couleur d'une commune</button>
+    <button class="tab" data-p="p2">Tarifs par zone</button>
+    <button class="tab" data-p="p3">Exception par commune</button>
   </div>
 
-  <!-- PANEL 1 : couleur commune -->
-  <div class="panel active" id="p-commune">
+  <div class="panel active glass" id="p1">
     <label>Chercher une commune</label>
-    <input type="text" id="commSearch" placeholder="Ex : Versailles" autocomplete="off"/>
-    <div id="commSugg"></div>
-    <div class="commune-current" id="commCurrent"></div>
-    <div id="commColorPick" style="display:none;">
+    <input type="text" id="s1" placeholder="Ex : Versailles" autocomplete="off"/>
+    <div id="sg1"></div>
+    <div id="cur1" style="margin-top:14px; font-size:15px;"></div>
+    <div id="pick1" style="display:none;">
       <label>Changer sa zone couleur</label>
-      <select id="commColorSel"></select>
-      <div class="hint">La commune prendra automatiquement la grille de tarifs de cette couleur.</div>
+      <select id="sel1"></select>
+      <div class="hint">La commune prendra automatiquement la grille de sa nouvelle couleur.</div>
     </div>
   </div>
 
-  <!-- PANEL 2 : tarifs par zone -->
-  <div class="panel" id="p-zone">
+  <div class="panel glass" id="p2">
     <label>Choisir la zone à modifier</label>
-    <select id="zoneSel"></select>
-    <table id="zoneTable"><tbody></tbody></table>
+    <select id="zsel"></select>
+    <table><tbody id="ztb"></tbody></table>
     <div class="hint">Le tarif s'applique à toutes les communes de cette couleur (sauf exceptions).</div>
   </div>
 
-  <!-- PANEL 3 : exception commune -->
-  <div class="panel" id="p-exc">
+  <div class="panel glass" id="p3">
     <label>Chercher une commune pour lui fixer un tarif spécifique</label>
-    <input type="text" id="excSearch" placeholder="Ex : Rambouillet" autocomplete="off"/>
-    <div id="excSugg"></div>
-    <div id="excEditor" style="display:none; margin-top:14px;"></div>
+    <input type="text" id="s3" placeholder="Ex : Rambouillet" autocomplete="off"/>
+    <div id="sg3"></div>
+    <div id="ed3" style="display:none; margin-top:16px;"></div>
   </div>
 </div>
 
-<div class="btn-row">
-  <span id="status" class="pending">Modifications non exportées</span>
-  <button class="btn btn-save" id="btnSave">Enregistrer (temporaire)</button>
-  <button class="btn btn-export" id="btnExport">Exporter data.js</button>
+<div class="footer">
+  <span id="status" class="status ok">&#10003; Aucune modification</span>
+  <button class="btn btn-export" id="btnExport" style="margin-left:auto;">&#8595; Exporter data.js</button>
 </div>
 
 <script src="data.js"></script>
 <script>
-const COLORS = {vert:'#28a745', jaune:'#ffc107', orange:'#fd7e14', rouge:'#dc3545', bleue:'#007bff'};
-const COLOR_NAMES = {vert:'Vert', jaune:'Jaune', orange:'Orange', rouge:'Rouge (hors secteur)', bleue:'Bleu (hors dépt)'};
-// Copie de travail
-let D = JSON.parse(JSON.stringify(DGF_DATA));
-if(!D.exceptions) D.exceptions = {};
+const COLORS={vert:'#28a745',jaune:'#ffc107',orange:'#fd7e14',rouge:'#dc3545',bleue:'#007bff'};
+const CN={vert:'Vert',jaune:'Jaune',orange:'Orange',rouge:'Rouge (hors secteur)',bleue:'Bleu (hors dépt)'};
+let D=JSON.parse(JSON.stringify(DGF_DATA)); if(!D.exceptions) D.exceptions={};
 
-function norm(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-' ]/g,'').toLowerCase(); }
-function dot(c){ return '<span class="dot" style="background:'+COLORS[c]+'"></span>'; }
-function badge(c){ return '<span class="badge" style="background:'+COLORS[c]+'">'+COLOR_NAMES[c]+'</span>'; }
+function norm(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-' ]/g,'').toLowerCase();}
+function dot(c){return '<span class="dot" style="background:'+COLORS[c]+'"></span>';}
+function badge(c){return '<span class="badge" style="background:'+COLORS[c]+'">'+CN[c]+'</span>';}
 
-// --- Onglets ---
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  document.getElementById(t.dataset.p).classList.add('active');
+  t.classList.add('active'); document.getElementById(t.dataset.p).classList.add('active');
 });
 
-// --- Autocomplétion générique ---
-function attachSearch(inputId, suggId, onPick){
-  const input=document.getElementById(inputId), box=document.getElementById(suggId);
-  box.style.cssText='background:#fff;border:1px solid #ccc;border-radius:8px;margin-top:4px;max-height:180px;overflow:auto;';
-  input.addEventListener('input',()=>{
-    const v=norm(input.value); box.innerHTML='';
+function attach(inpId,boxId,cb){
+  const inp=document.getElementById(inpId); const box=document.getElementById(boxId);
+  inp.addEventListener('input',()=>{
+    const v=norm(inp.value); box.innerHTML=''; box.className='';
     if(!v) return;
-    D.communes.filter(c=>norm(c.commune).startsWith(v)).slice(0,10).forEach(c=>{
-      const d=document.createElement('div');
-      d.style.cssText='padding:9px 12px;cursor:pointer;font-size:15px;border-bottom:1px solid #f0f0f0;';
-      d.innerHTML=dot(c.color)+c.commune;
-      d.onmouseover=()=>d.style.background='#f0f0f0'; d.onmouseout=()=>d.style.background='#fff';
-      d.onclick=()=>{ input.value=c.commune; box.innerHTML=''; onPick(c); };
-      box.appendChild(d);
-    });
+    const res=D.communes.filter(c=>norm(c.commune).startsWith(v)).slice(0,8);
+    if(!res.length) return;
+    box.className='sugg';
+    res.forEach(c=>{ const d=document.createElement('div'); d.innerHTML=dot(c.color)+c.commune; d.onclick=()=>{ inp.value=c.commune; box.innerHTML=''; box.className=''; cb(c); }; box.appendChild(d); });
   });
 }
 
-// === PANEL 1 : couleur commune ===
-let selComm=null;
-attachSearch('commSearch','commSugg',c=>{
-  selComm=c;
-  document.getElementById('commCurrent').innerHTML='Zone actuelle : '+badge(c.color);
-  const sel=document.getElementById('commColorSel'); sel.innerHTML='';
-  Object.keys(COLOR_NAMES).forEach(col=>{
-    const o=document.createElement('option'); o.value=col; o.textContent=COLOR_NAMES[col];
-    if(col===c.color) o.selected=true; sel.appendChild(o);
-  });
-  document.getElementById('commColorPick').style.display='block';
+let selC=null;
+attach('s1','sg1',c=>{
+  selC=c; document.getElementById('cur1').innerHTML='Zone actuelle : '+badge(c.color);
+  const sel=document.getElementById('sel1'); sel.innerHTML='';
+  Object.keys(CN).forEach(col=>{ const o=document.createElement('option'); o.value=col; o.textContent=CN[col]; if(col===c.color)o.selected=true; sel.appendChild(o); });
+  document.getElementById('pick1').style.display='block';
 });
-document.getElementById('commColorSel').addEventListener('change',function(){
-  if(!selComm) return;
-  const target=D.communes.find(x=>x.commune===selComm.commune);
-  target.color=this.value; selComm.color=this.value;
-  document.getElementById('commCurrent').innerHTML='Zone actuelle : '+badge(this.value);
-  markDirty();
+document.getElementById('sel1').addEventListener('change',function(){
+  if(!selC) return; const tc=D.communes.find(x=>x.commune===selC.commune); tc.color=this.value; selC.color=this.value;
+  document.getElementById('cur1').innerHTML='Zone actuelle : '+badge(this.value); markDirty();
 });
 
-// === PANEL 2 : tarifs par zone ===
-const zoneSel=document.getElementById('zoneSel');
-['vert','jaune','orange','bleue','rouge'].forEach(col=>{
-  const o=document.createElement('option'); o.value=col; o.textContent=COLOR_NAMES[col]; zoneSel.appendChild(o);
-});
+const zsel=document.getElementById('zsel');
+['vert','jaune','orange','bleue','rouge'].forEach(col=>{ const o=document.createElement('option'); o.value=col; o.textContent=CN[col]; zsel.appendChild(o); });
 function renderZone(){
-  const col=zoneSel.value, tb=document.querySelector('#zoneTable tbody'); tb.innerHTML='';
-  D.labels.forEach((lab,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td>'+lab+'</td><td><input type="text" value="'+D.grilles[col][i]+'" data-i="'+i+'"></td>';
-    tb.appendChild(tr);
-  });
-  tb.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',function(){
-    D.grilles[col][this.dataset.i]=this.value; markDirty();
-  }));
+  const col=zsel.value, tb=document.getElementById('ztb'); tb.innerHTML='';
+  D.labels.forEach((lab,i)=>{ const tr=document.createElement('tr'); tr.innerHTML='<td>'+lab+'</td><td style="text-align:right;"><input type="text" value="'+D.grilles[col][i]+'" data-i="'+i+'"></td>'; tb.appendChild(tr); });
+  tb.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',function(){ D.grilles[col][this.dataset.i]=this.value; markDirty(); }));
 }
-zoneSel.addEventListener('change',renderZone);
-renderZone();
+zsel.addEventListener('change',renderZone); renderZone();
 
-// === PANEL 3 : exception commune ===
-attachSearch('excSearch','excSugg',c=>{
-  const ed=document.getElementById('excEditor');
-  const base = D.exceptions[c.commune] ? D.exceptions[c.commune].slice() : D.grilles[c.color].slice();
-  let html='<div style="margin-bottom:10px;">'+c.commune+' '+badge(c.color)+
-    (D.exceptions[c.commune]?' <span style="color:#0760e5;font-weight:bold;">(exception active)</span>':'')+'</div>';
-  D.labels.forEach((lab,i)=>{
-    html+='<div class="exc-row"><span class="lab">'+lab+'</span><input type="text" data-i="'+i+'" value="'+base[i]+'" style="width:100px;padding:7px;border:1.5px solid #ccc;border-radius:7px;"></div>';
-  });
-  html+='<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">'+
-    '<button class="btn btn-save" id="excApply">Définir comme exception</button>'+
-    '<button class="btn" id="excClear" style="background:#888;">Supprimer l\'exception</button></div>';
-  ed.innerHTML=html; ed.style.display='block';
-  document.getElementById('excApply').onclick=()=>{
-    const vals=[...ed.querySelectorAll('input')].map(x=>x.value);
-    D.exceptions[c.commune]=vals; markDirty(); alert('Exception définie pour '+c.commune);
-  };
-  document.getElementById('excClear').onclick=()=>{
-    delete D.exceptions[c.commune]; markDirty(); alert('Exception supprimée — '+c.commune+' reprend le tarif de sa zone.');
-    ed.style.display='none'; document.getElementById('excSearch').value='';
-  };
+attach('s3','sg3',c=>{
+  const ed=document.getElementById('ed3');
+  const base=D.exceptions[c.commune]?D.exceptions[c.commune].slice():D.grilles[c.color].slice();
+  let h='<div style="margin-bottom:12px; font-size:15px;">'+c.commune+' '+badge(c.color)+(D.exceptions[c.commune]?' <span style="color:#9ec5ff;font-weight:500;">(exception active)</span>':'')+'</div>';
+  D.labels.forEach((lab,i)=>{ h+='<div class="exc-row"><span class="l">'+lab+'</span><input type="text" data-i="'+i+'" value="'+base[i]+'"></div>'; });
+  h+='<div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;"><button class="btn btn-primary" id="eAp">Définir l\'exception</button><button class="btn btn-ghost" id="eCl">Supprimer</button></div>';
+  ed.innerHTML=h; ed.style.display='block';
+  document.getElementById('eAp').onclick=()=>{ D.exceptions[c.commune]=[...ed.querySelectorAll('input')].map(x=>x.value); markDirty(); alert('Exception définie pour '+c.commune); };
+  document.getElementById('eCl').onclick=()=>{ delete D.exceptions[c.commune]; markDirty(); ed.style.display='none'; document.getElementById('s3').value=''; alert(c.commune+' reprend le tarif de sa zone.'); };
 });
 
-// === État / Export ===
-let dirty=false;
-function markDirty(){ dirty=true; const s=document.getElementById('status'); s.textContent='Modifications non exportées'; s.className='pending'; }
-document.getElementById('btnSave').onclick=()=>{
-  const s=document.getElementById('status');
-  s.textContent='Enregistré (n\'oubliez pas d\'exporter)'; s.className='pending';
-  alert('Modifications enregistrées dans cette page.\n\nElles ne seront EN LIGNE qu\'après "Exporter data.js" + redépôt sur GitHub.');
-};
+let nbModifs=0;
+function markDirty(){ nbModifs++; const s=document.getElementById('status'); s.innerHTML='&#9888; '+nbModifs+' modification'+(nbModifs>1?'s':'')+' à exporter'; s.className='status pending'; }
 document.getElementById('btnExport').onclick=()=>{
   const js='// Données DGF 78 — généré automatiquement\n'+
     '// labels: intitulés des 7 tarifs | grilles: prix par couleur | communes: liste avec couleur | exceptions: surcharge par commune\n'+
     'var DGF_DATA = '+JSON.stringify(D,null,2)+';\n';
   const blob=new Blob([js],{type:'text/javascript'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='data.js'; a.click();
-  const s=document.getElementById('status'); s.textContent='Exporté — redéposez data.js sur GitHub'; s.className='ok'; dirty=false;
+  nbModifs=0; const s=document.getElementById('status'); s.innerHTML='&#10003; Exporté — redéposez data.js sur GitHub'; s.className='status ok';
+  alert('Fichier data.js téléchargé.\n\nDernière étape : redéposez-le sur GitHub pour que ce soit en ligne.');
 };
-window.addEventListener('beforeunload',e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
+window.addEventListener('beforeunload',e=>{ if(nbModifs>0){ e.preventDefault(); e.returnValue=''; } });
+document.getElementById('backLink').addEventListener('click',e=>{
+  if(nbModifs>0 && !confirm('Vous avez '+nbModifs+' modification(s) NON exportée(s).\n\nElles seront perdues si vous revenez à la carte sans cliquer sur "Exporter data.js".\n\nRevenir quand même ?')){ e.preventDefault(); }
+});
 </script>
 </body>
 </html>

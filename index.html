@@ -2,200 +2,198 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Carte des Yvelines</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>DGF 78 — Carte des appels</title>
 <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
 <style>
-  html, body { margin:0; padding:0; height:100%; }
-  #map { width:100%; height:100%; }
-  #search {
-    position:absolute; top:calc(100vh/12); left:50%; transform:translateX(-50%);
-    width:360px; max-width:85%; padding:12px 14px;
-    font-family:Helvetica,sans-serif; font-size:20px;
-    border:2px solid #ccc; border-radius:25px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  :root{
+    --glass-bg:rgba(22,26,34,0.62);
+    --glass-bg-light:rgba(255,255,255,0.08);
+    --glass-border:rgba(255,255,255,0.22);
+    --glass-border-soft:rgba(255,255,255,0.12);
+    --txt:#ffffff;
+    --txt-soft:rgba(255,255,255,0.82);
+    --txt-mute:rgba(255,255,255,0.52);
   }
-  #suggestions {
-    position:absolute; top:calc(100vh/12 + 52px); left:50%; transform:translateX(-50%);
-    width:360px; max-width:85%; background:white;
-    border:1px solid #ccc; border-radius:8px;
-    max-height:150px; overflow-y:auto;
-    box-shadow:0 2px 6px rgba(0,0,0,0.15); z-index:1000;
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+  #map{position:absolute; inset:0; width:100%; height:100%; z-index:1;}
+  .glass{ background:var(--glass-bg); -webkit-backdrop-filter:blur(28px) saturate(160%); backdrop-filter:blur(28px) saturate(160%); border:0.5px solid var(--glass-border); box-shadow:inset 0 1px 0 rgba(255,255,255,0.18), 0 10px 40px rgba(0,0,0,0.35); }
+
+  #topbar{ position:absolute; top:16px; left:50%; transform:translateX(-50%); width:min(560px,92vw); z-index:1000; display:flex; gap:10px; align-items:center; }
+  #brand{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:16px; flex-shrink:0; }
+  #brand img{ height:30px; width:auto; display:block; border-radius:7px; }
+  #searchWrap{ position:relative; flex:1; }
+  #searchWrap .ic{ position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--txt-mute); font-size:18px; pointer-events:none; font-style:normal; }
+  #search{ width:100%; padding:13px 16px 13px 44px; border-radius:16px; border:none; outline:none; font-size:17px; color:var(--txt); background:transparent; }
+  #search::placeholder{ color:var(--txt-mute); }
+  #reglages-btn{ flex-shrink:0; display:flex; align-items:center; gap:6px; padding:12px 14px; border-radius:16px; color:var(--txt); text-decoration:none; font-size:14px; font-weight:500; cursor:pointer; }
+
+  #suggestions{ position:absolute; top:64px; left:0; right:0; border-radius:16px; overflow:hidden; z-index:1001; max-height:46vh; overflow-y:auto; }
+  .suggestion{ padding:13px 16px; cursor:pointer; font-size:16px; color:var(--txt-soft); display:flex; align-items:center; gap:10px; border-bottom:0.5px solid var(--glass-border-soft); }
+  .suggestion:last-child{ border-bottom:none; }
+  .suggestion:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  .sdot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+  #info{ display:none; position:absolute; top:84px; left:50%; transform:translateX(-50%); width:min(560px,92vw); border-radius:24px; z-index:999; max-height:calc(100vh - 110px); overflow-y:auto; padding:0; }
+  .info-head{ padding:20px 22px 16px; border-bottom:0.5px solid var(--glass-border-soft); display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .info-title{ color:#fff; font-size:23px; font-weight:600; letter-spacing:-0.3px; line-height:1.2; margin-bottom:10px; }
+  .zbadge{ display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:500; padding:5px 13px; border-radius:20px; border:0.5px solid; }
+  .zbadge .zd{ width:8px; height:8px; border-radius:50%; }
+  .cp{ text-align:right; flex-shrink:0; }
+  .cp .lbl{ color:var(--txt-mute); font-size:10px; text-transform:uppercase; letter-spacing:0.5px; }
+  .cp .val{ color:var(--txt-soft); font-size:15px; }
+  .subv{ display:inline-flex; align-items:center; gap:6px; margin-top:8px; font-size:12px; color:#7ee0a8; background:rgba(34,197,94,0.14); border:0.5px solid rgba(34,197,94,0.35); padding:4px 10px; border-radius:14px; }
+
+  .sec{ padding:14px 22px; }
+  .sec-lbl{ color:var(--txt-mute); font-size:11px; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:8px; }
+  .tline{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:0.5px solid var(--glass-border-soft); }
+  .tline:last-child{ border-bottom:none; }
+  .tline .lab{ color:var(--txt-soft); font-size:15px; }
+  .tline .price{ color:#fff; font-size:21px; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tgrid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .tcard{ background:var(--glass-bg-light); border:0.5px solid var(--glass-border-soft); border-radius:14px; padding:11px 13px; }
+  .tcard .h{ color:var(--txt-mute); font-size:12px; }
+  .tcard .p{ color:#fff; font-size:18px; font-weight:600; }
+  .hors-big{ color:#ff9b9b; font-size:19px; font-weight:600; padding:8px 0; }
+
+  .btns{ padding:16px 22px; display:flex; gap:11px; flex-wrap:wrap; }
+  .btns a{ flex:1; min-width:140px; text-align:center; padding:14px; border-radius:16px; color:#fff; text-decoration:none; font-size:15px; font-weight:500; border:0.5px solid var(--glass-border); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); }
+  .btn-plan{ background:rgba(34,197,94,0.85); }
+  .btn-cli{ background:rgba(37,99,235,0.85); }
+
+  #consigne-fixe{ position:absolute; bottom:18px; right:18px; width:min(330px,90vw); border-radius:18px; padding:15px 17px; z-index:998; }
+  #consigne-fixe .pro{ color:#ff9b9b; font-weight:600; font-size:14px; margin-bottom:7px; display:flex; align-items:center; gap:6px; }
+  #consigne-fixe .line{ color:var(--txt-soft); font-size:13px; line-height:1.7; }
+  #consigne-fixe .line b{ color:#fff; font-weight:600; }
+
+  .leaflet-control-attribution{ background:rgba(0,0,0,0.4)!important; color:rgba(255,255,255,0.5)!important; }
+  .leaflet-control-attribution a{ color:rgba(255,255,255,0.7)!important; }
+  .leaflet-control-zoom a{ background:var(--glass-bg)!important; color:#fff!important; border:0.5px solid var(--glass-border)!important; -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); }
+
+  @media(max-width:600px){
+    #topbar{ top:10px; }
+    #brand{ padding:8px 10px; } #brand img{ height:26px; }
+    #search{ font-size:16px; padding:12px 14px 12px 42px; }
+    #reglages-btn span{ display:none; }
+    #info{ top:74px; width:94vw; }
+    .info-title{ font-size:20px; }
+    .tline .price{ font-size:19px; }
+    #consigne-fixe{ width:94vw; right:3vw; bottom:10px; font-size:12px; }
   }
-  .suggestion { padding:8px 12px; cursor:pointer; font-family:Helvetica,sans-serif; font-size:20px; }
-  .suggestion:hover { background:#f0f0f0; }
-
-  #info {
-    background:#fff !important; opacity:1 !important; backdrop-filter:none;
-    display:none; position:absolute; top:30%; left:5%;
-    width:45%; max-width:600px; border-radius:12px;
-    box-shadow:0 4px 16px rgba(0,0,0,0.18); padding:16px 20px;
-    font-family:Helvetica,sans-serif; font-size:15px; color:black;
-    z-index:1000; max-height:65%; overflow-y:auto;
-  }
-  #info .info-header { margin:0 0 8px 0; font-size:22px; font-weight:bold; }
-  #info .info-subtitle { margin:0 0 14px 0; font-size:16px; font-weight:bold; }
-  #info .info-list { list-style:none; padding:0; margin:0; }
-  #info .info-list li { margin:16px 0; font-size:22px; white-space:nowrap; }
-  #info .info-list li.hors { color:red; font-weight:bold; }
-  #info hr { margin:16px 0; border:none; border-top:1px solid #ccc; }
-  #logo { position:absolute; top:40px; right:40px; width:120px; z-index:1001; pointer-events:none; }
-
-  #reglages-btn {
-    position:absolute; top:40px; left:40px; z-index:1001;
-    background:#fff; color:#1d1d1d; text-decoration:none;
-    font-family:Helvetica,sans-serif; font-size:15px; font-weight:bold;
-    padding:10px 16px; border-radius:22px; box-shadow:0 2px 8px rgba(0,0,0,0.15);
-  }
-
-  .info-btn-row { margin-top:36px; display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin-bottom:14px; }
-  .info-btn-row a { font-size:21px !important; padding:12px 24px !important; border-radius:27px !important; }
-
-  #consigne-fixe {
-    position:fixed; bottom:28px; right:34px; width:350px; background:#fff;
-    border-radius:14px; box-shadow:0 6px 24px rgba(0,0,0,0.14); padding:24px 20px 20px 24px;
-    font-family:Helvetica,Arial,sans-serif; font-size:16px; color:#222; z-index:2001;
-    display:flex; flex-direction:column; gap:15px; border:1.2px solid #e0e0e0;
-  }
-  #consigne-fixe .pro { color:#dc3545; font-weight:bold; font-size:18px; margin-bottom:4px; }
-  #consigne-fixe .paiement { color:#222; font-weight:bold; font-size:16px; margin-bottom:2px; }
-  #consigne-fixe .infos { font-weight:normal; color:#222; font-size:15px; margin-bottom:2px; }
-
-  @media (max-width:700px) {
-    #consigne-fixe { width:230px; right:2vw; padding:12px 10px; font-size:11px; gap:8px; }
-    #consigne-fixe .pro { font-size:12px; }
-    #consigne-fixe .paiement { font-size:11px; }
-    #consigne-fixe .infos { font-size:10px; }
-    #info { width:90%; left:5%; font-size:14px; }
-    #info .info-list li { font-size:18px; white-space:normal; }
-    #logo { width:70px; top:14px; right:14px; }
-    #reglages-btn { top:14px; left:14px; font-size:13px; padding:8px 12px; }
-    .info-btn-row { flex-direction:column; align-items:center; gap:11px; }
-    .info-btn-row a { font-size:16px !important; padding:10px 18px !important; border-radius:22px !important; min-width:140px; max-width:90%; text-align:center !important; margin:0 auto !important; display:block !important; }
+  @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+    .glass{ background:rgba(20,24,32,0.92); }
   }
 </style>
 </head>
 <body>
-<a href="reglages.html" id="reglages-btn">⚙ Réglages</a>
-<img alt="Logo" id="logo" src="image.png"/>
-<input autocomplete="off" id="search" placeholder="Rechercher une commune" type="text"/>
-<div id="suggestions"></div>
-<div id="info"></div>
 <div id="map"></div>
 
-<div id="consigne-fixe">
-  <div class="pro">À demander si PROFESSIONNEL</div>
-  <div class="paiement">Paiement sur place = tarif TTC affiché +20 €</div>
-  <div class="paiement">Paiement 30 jours nets = tarif TTC affiché +40 €</div>
-  <div class="infos">Règlement Chèque accepté pour les pros</div>
-  <div class="infos">Toujours donner ensuite le tarif Hors Taxes = Tarif TTC / 1,2</div>
+<div id="topbar">
+  <div id="brand" class="glass"><img src="image.png" alt="DGF 78"/></div>
+  <div id="searchWrap" class="glass" style="border-radius:16px;">
+    <i class="ic">&#128269;</i>
+    <input id="search" type="text" placeholder="Rechercher une commune" autocomplete="off"/>
+  </div>
+  <a href="reglages.html" id="reglages-btn" class="glass">&#9881;<span>Réglages</span></a>
+  <div id="suggestions" class="glass" style="display:none;"></div>
+</div>
+
+<div id="info" class="glass"></div>
+
+<div id="consigne-fixe" class="glass">
+  <div class="pro">&#9888; À demander si professionnel</div>
+  <div class="line"><b>Sur place</b> = TTC +20 € · <b>30 jours</b> = TTC +40 €</div>
+  <div class="line">Chèque accepté pros · <b>HT = TTC / 1,2</b></div>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="data.js"></script>
 <script>
-const colorMap = { vert:'#28a745', jaune:'#ffc107', orange:'#fd7e14', rouge:'#dc3545', bleue:'#007bff' };
-const communesCCHVC = [
-  "Chevreuse","Choisel","Dampierre-En-Yvelines","Le Mesnil-Saint-Denis","Lévis-Saint-Nom",
-  "Milon-La-Chapelle","Saint-Forget","Saint-Lambert-Des-Bois","Saint-Rémy-Lès-Chevreuse","Senlisse"
-];
+const colorMap={vert:'#28a745',jaune:'#ffc107',orange:'#fd7e14',rouge:'#dc3545',bleue:'#007bff'};
+const zoneName={vert:'Vert',jaune:'Jaune',orange:'Orange',rouge:'Rouge',bleue:'Bleu'};
+const communesCCHVC=["Chevreuse","Choisel","Dampierre-En-Yvelines","Le Mesnil-Saint-Denis","Lévis-Saint-Nom","Milon-La-Chapelle","Saint-Forget","Saint-Lambert-Des-Bois","Saint-Rémy-Lès-Chevreuse","Senlisse"];
 
-// Données issues de data.js (structure par zone)
-const communesData = DGF_DATA.communes;
-const LABELS = DGF_DATA.labels;
-const GRILLES = DGF_DATA.grilles;
-const EXCEPTIONS = DGF_DATA.exceptions || {};
+const communesData=DGF_DATA.communes;
+const LABELS=DGF_DATA.labels;
+const GRILLES=DGF_DATA.grilles;
+const EXCEPTIONS=DGF_DATA.exceptions||{};
 
-// Construit la table de tarifs effective d'une commune (exception > grille de zone)
 function tarifsDe(c){
-  const prix = EXCEPTIONS[c.commune] ? EXCEPTIONS[c.commune] : GRILLES[c.color];
-  const t = {};
-  LABELS.forEach((lab,i)=>{ t[lab] = prix[i]; });
-  return t;
+  const prix=EXCEPTIONS[c.commune]?EXCEPTIONS[c.commune]:GRILLES[c.color];
+  const t={}; LABELS.forEach((l,i)=>t[l]=prix[i]); return t;
 }
 
-var map = L.map('map').setView([48.8566,2.0474],9);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ attribution:'© OpenStreetMap contributors' }).addTo(map);
-var logoIcon = L.icon({ iconUrl:'image.png', iconSize:[80,80], iconAnchor:[40,80] });
+var map=L.map('map',{zoomControl:true}).setView([48.78,1.95],10);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+var logoIcon=L.icon({iconUrl:'image.png',iconSize:[70,70],iconAnchor:[35,70]});
 var marker, infoPanel=document.getElementById('info');
 
-function normalize(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-' ]/g,'').toLowerCase(); }
+function normalize(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-' ]/g,'').toLowerCase();}
 
-document.getElementById('search').addEventListener('input',function(){
-  var val=normalize(this.value), box=document.getElementById('suggestions');
-  box.innerHTML=''; if(!val) return;
-  communesData.filter(c=>normalize(c.commune).startsWith(val)).slice(0,10).forEach(c=>{
-    var d=document.createElement('div');
-    d.className='suggestion'; d.textContent=c.commune;
-    d.onclick=function(){ selectCommune(c); box.innerHTML=''; document.getElementById('search').value=c.commune; };
-    box.appendChild(d);
+const searchEl=document.getElementById('search'), suggBox=document.getElementById('suggestions');
+searchEl.addEventListener('input',function(){
+  var val=normalize(this.value); suggBox.innerHTML='';
+  if(!val){ suggBox.style.display='none'; return; }
+  var res=communesData.filter(c=>normalize(c.commune).startsWith(val)).slice(0,10);
+  if(!res.length){ suggBox.style.display='none'; return; }
+  res.forEach(c=>{
+    var d=document.createElement('div'); d.className='suggestion';
+    d.innerHTML='<span class="sdot" style="background:'+colorMap[c.color]+'"></span>'+c.commune;
+    d.onclick=function(){ selectCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; };
+    suggBox.appendChild(d);
   });
+  suggBox.style.display='block';
 });
-document.getElementById('search').addEventListener('keydown', function(e) {
-  if(e.key === 'Enter') {
-    var val = normalize(this.value);
-    var commune = communesData.find(c => normalize(c.commune) === val) || communesData.find(c => normalize(c.commune).startsWith(val));
-    if(commune) { selectCommune(commune); document.getElementById('suggestions').innerHTML = ''; }
+searchEl.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){
+    var val=normalize(this.value);
+    var c=communesData.find(x=>normalize(x.commune)===val)||communesData.find(x=>normalize(x.commune).startsWith(val));
+    if(c){ selectCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; }
   }
 });
-function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+document.addEventListener('click',e=>{ if(!document.getElementById('topbar').contains(e.target)) suggBox.style.display='none'; });
 
 function selectCommune(c){
   if(marker) map.removeLayer(marker);
-  marker = L.marker([c.lat,c.lon],{icon:logoIcon}).addTo(map);
-  map.setView([c.lat,c.lon],13);
-  infoPanel.style.display='block';
-  var tarifs = tarifsDe(c);
+  marker=L.marker([c.lat,c.lon],{icon:logoIcon}).addTo(map);
+  map.setView([c.lat,c.lon],13,{animate:true});
+  var t=tarifsDe(c);
+  var isHors=String(t[LABELS[0]]).toLowerCase().includes('hors secteur');
+  var col=colorMap[c.color];
 
-  let subvention = '';
-  if(communesCCHVC.map(x=>x.toLowerCase()).includes(c.commune.toLowerCase())) {
-    subvention = '<span style="color:#388e3c;font-weight:bold;font-size:16px;"> – (subvention CCHVC frelon asiatique)</span>';
+  var subv=communesCCHVC.map(x=>x.toLowerCase()).includes(c.commune.toLowerCase())
+    ? '<div class="subv">&#10003; Subvention CCHVC frelon asiatique</div>' : '';
+  var zmention = c.color==='bleue' ? ' <span style="font-weight:400;color:#9ec5ff;font-size:12px;">(hors dépt, intervention possible)</span>' : '';
+
+  var h='<div class="info-head"><div><div class="info-title">'+c.commune+'</div>'+
+    '<span class="zbadge" style="background:'+hexA(col,0.2)+';border-color:'+hexA(col,0.45)+';color:'+lighten(col)+'">'+
+    '<span class="zd" style="background:'+col+'"></span>Zone '+zoneName[c.color]+'</span>'+zmention+subv+'</div></div>';
+
+  if(isHors){
+    h+='<div class="sec"><div class="hors-big">&#9888; Hors secteur d\'intervention</div></div>';
+  }else{
+    h+='<div class="sec"><div class="sec-lbl">Interventions au sol</div>';
+    LABELS.slice(0,3).forEach((l)=>{ h+='<div class="tline"><span class="lab">'+shortLab(l)+'</span><span class="price">'+t[l]+'</span></div>'; });
+    h+='</div>';
+    h+='<div class="sec"><div class="sec-lbl">Nid dans un arbre</div><div class="tgrid">';
+    var arbre=['6 à 10 m','10 à 15 m','15 à 20 m','20 à 30 m'];
+    LABELS.slice(3).forEach((l,i)=>{ h+='<div class="tcard"><div class="h">'+arbre[i]+'</div><div class="p">'+t[l]+'</div></div>'; });
+    h+='</div></div>';
   }
-  let zn = cap(c.color);
-  let zoneMention = '';
-  if (c.color === "bleue") {
-    zoneMention = ' <span style="font-size:15px;font-weight:normal;color:#007bff;">(hors département mais intervention possible)</span>';
-  }
-  infoPanel.innerHTML = '<div class="info-header">' + c.commune + subvention + '</div>';
-  infoPanel.innerHTML += '<div class="info-subtitle">Zone: <span style="color:' + colorMap[c.color] + '; font-weight:bold;">' + zn + '</span>' + zoneMention + '</div>';
-
-  var keys = Object.keys(tarifs),
-      firstThree = keys.slice(0,3),
-      treeItems = keys.filter(k=>k.toLowerCase().includes('nid dans un arbre')),
-      horsItems = keys.filter(k=>String(tarifs[k]).toLowerCase().includes('hors secteur'));
-
-  if(horsItems.length === keys.length){
-    // toute la commune est hors secteur
-    infoPanel.innerHTML += '<ul class="info-list"><li class="hors">! Hors secteur d\'intervention !</li></ul>';
-  } else {
-    infoPanel.innerHTML += '<ul class="info-list">';
-    firstThree.forEach(k => { infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + tarifs[k] + '</li>'; });
-    infoPanel.innerHTML += '</ul><hr>';
-    infoPanel.innerHTML += '<ul class="info-list">';
-    treeItems.forEach(k => { infoPanel.innerHTML += '<li><strong>' + k + '</strong>: ' + tarifs[k] + '</li>'; });
-    infoPanel.innerHTML += '</ul>';
-  }
-  styleTarifsRouges();
-
-  infoPanel.innerHTML += `
-    <div class="info-btn-row">
-      <a href="https://destructionguepesetfrelons.organilog.com/planning" target="_blank"
-        style="background:#08813e;color:#fff;font-size:21px;padding:12px 24px;border-radius:27px;border:none;
-        box-shadow:0 1px 8px rgba(0,0,0,0.10);cursor:pointer;display:inline-block;text-decoration:none;">
-        Consulter le planning
-      </a>
-      <a href="https://destructionguepesetfrelons.organilog.com/client_edit.php" target="_blank"
-        style="background:#0760e5;color:#fff;font-size:21px;padding:12px 24px;border-radius:27px;border:none;
-        box-shadow:0 1px 8px rgba(0,0,0,0.10);cursor:pointer;display:inline-block;text-decoration:none;">
-        Ajouter le client dans Organilog
-      </a>
-    </div>`;
+  h+='<div class="btns"><a class="btn-plan" href="https://destructionguepesetfrelons.organilog.com/planning" target="_blank">&#128197; Planning</a>'+
+     '<a class="btn-cli" href="https://destructionguepesetfrelons.organilog.com/client_edit.php" target="_blank">&#43; Ajouter client</a></div>';
+  infoPanel.innerHTML=h; infoPanel.style.display='block'; infoPanel.scrollTop=0;
 }
-function styleTarifsRouges() {
-  document.querySelectorAll('#info .info-list li').forEach(li => {
-    li.innerHTML = li.innerHTML.replace(/(\d+[  ]?(?:€|euros))/gi, '<span style="color:red;font-weight:bold;">$1</span>');
-  });
+function shortLab(l){
+  return l.replace("Hauteur d'homme nid visible moins de 3m","Hauteur d'homme · nid <3m")
+          .replace("Nid non visible moins de 3m - en terre ou coffret volet roulant","Nid non visible <3m · terre/volet")
+          .replace("Intervention toiture - chien-assis + reco caméra accès intérieur","Toiture · chien-assis + caméra");
 }
+function hexA(hex,a){ var n=parseInt(hex.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+function lighten(hex){ var n=parseInt(hex.slice(1),16),r=(n>>16),g=(n>>8)&255,b=n&255; r=Math.min(255,r+90);g=Math.min(255,g+90);b=Math.min(255,b+90); return 'rgb('+r+','+g+','+b+')'; }
 </script>
 </body>
 </html>

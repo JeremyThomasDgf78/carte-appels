@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>DGF 78 — Carte des zones</title>
+<link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
+<style>
+  :root{
+    --glass:rgba(22,26,34,0.62);
+    --bd:rgba(255,255,255,0.22);
+    --bd-soft:rgba(255,255,255,0.12);
+    --txt:#fff; --txt-soft:rgba(255,255,255,0.82); --txt-mute:rgba(255,255,255,0.52);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+  #map{position:absolute; inset:0; z-index:1;}
+  .glass{ background:var(--glass); -webkit-backdrop-filter:blur(28px) saturate(160%); backdrop-filter:blur(28px) saturate(160%); border:0.5px solid var(--bd); box-shadow:inset 0 1px 0 rgba(255,255,255,0.18),0 10px 40px rgba(0,0,0,0.35); }
+
+  #topbar{ position:absolute; top:16px; left:50%; transform:translateX(-50%); width:min(560px,92vw); z-index:1000; display:flex; gap:10px; align-items:center; }
+  #brand{ display:flex; align-items:center; padding:10px 12px; border-radius:16px; flex-shrink:0; }
+  #brand img{ height:30px; border-radius:7px; display:block; }
+  #searchWrap{ position:relative; flex:1; border-radius:16px; }
+  #searchWrap .ic{ position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--txt-mute); font-size:18px; font-style:normal; pointer-events:none; }
+  #search{ width:100%; padding:13px 16px 13px 44px; border-radius:16px; border:none; outline:none; font-size:17px; color:#fff; background:transparent; }
+  #search::placeholder{ color:var(--txt-mute); }
+  #toCarte{ flex-shrink:0; display:flex; align-items:center; gap:6px; padding:12px 14px; border-radius:16px; color:#fff; text-decoration:none; font-size:14px; font-weight:500; }
+  #suggestions{ position:absolute; top:64px; left:0; right:0; border-radius:16px; overflow:hidden; z-index:1001; max-height:44vh; overflow-y:auto; display:none; }
+  .suggestion{ padding:13px 16px; cursor:pointer; font-size:16px; color:var(--txt-soft); display:flex; align-items:center; gap:10px; border-bottom:0.5px solid var(--bd-soft); }
+  .suggestion:hover{ background:rgba(255,255,255,0.1); color:#fff; }
+  .sdot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+  #legend{ position:absolute; top:16px; right:16px; z-index:999; border-radius:16px; padding:14px 16px; width:200px; }
+  #legend .lt{ color:#fff; font-size:13px; font-weight:600; margin-bottom:10px; }
+  .lrow{ display:flex; align-items:center; gap:9px; margin:7px 0; color:var(--txt-soft); font-size:13px; cursor:pointer; }
+  .lrow .ld{ width:14px; height:14px; border-radius:4px; flex-shrink:0; }
+  .lrow .cnt{ margin-left:auto; color:var(--txt-mute); font-size:12px; }
+  .lrow.off{ opacity:0.38; }
+
+  #loading{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1500; border-radius:16px; padding:18px 24px; color:#fff; font-size:15px; display:flex; align-items:center; gap:12px; }
+  .spin{ width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:sp 0.8s linear infinite; }
+  @keyframes sp{ to{ transform:rotate(360deg); } }
+
+  #tip{ position:absolute; bottom:18px; left:50%; transform:translateX(-50%); z-index:999; border-radius:14px; padding:11px 18px; color:var(--txt-soft); font-size:13px; display:none; }
+  #tip b{ color:#fff; }
+
+  .leaflet-control-attribution{ background:rgba(0,0,0,0.4)!important; color:rgba(255,255,255,0.5)!important; }
+  .leaflet-control-attribution a{ color:rgba(255,255,255,0.7)!important; }
+  .leaflet-control-zoom a{ background:var(--glass)!important; color:#fff!important; border:0.5px solid var(--bd)!important; -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); }
+
+  @media(max-width:600px){
+    #topbar{ top:10px; } #toCarte span{ display:none; }
+    #legend{ top:auto; bottom:10px; right:10px; width:150px; padding:11px 13px; }
+    .lrow{ font-size:12px; margin:5px 0; }
+    #tip{ display:none!important; }
+  }
+  @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){ .glass{ background:rgba(20,24,32,0.92); } }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="topbar">
+  <div id="brand" class="glass"><img src="image.png" alt="DGF 78"/></div>
+  <div id="searchWrap" class="glass"><i class="ic">&#128269;</i><input id="search" type="text" placeholder="Trouver une commune sur la carte" autocomplete="off"/></div>
+  <a href="index.html" id="toCarte" class="glass">&#128203;<span>Tarifs</span></a>
+  <div id="suggestions" class="glass"></div>
+</div>
+
+<div id="legend" class="glass">
+  <div class="lt">Zones d'intervention</div>
+  <div class="lrow" data-z="vert"><span class="ld" style="background:#28a745"></span>Vert<span class="cnt" id="c-vert"></span></div>
+  <div class="lrow" data-z="jaune"><span class="ld" style="background:#ffc107"></span>Jaune<span class="cnt" id="c-jaune"></span></div>
+  <div class="lrow" data-z="orange"><span class="ld" style="background:#fd7e14"></span>Orange<span class="cnt" id="c-orange"></span></div>
+  <div class="lrow" data-z="bleue"><span class="ld" style="background:#007bff"></span>Bleu (hors dépt)<span class="cnt" id="c-bleue"></span></div>
+  <div class="lrow" data-z="rouge"><span class="ld" style="background:#dc3545"></span>Rouge (hors secteur)<span class="cnt" id="c-rouge"></span></div>
+  <div class="lrow" data-z="none"><span class="ld" style="background:#6b7280"></span>Non classée<span class="cnt" id="c-none"></span></div>
+</div>
+
+<div id="loading" class="glass"><div class="spin"></div>Chargement des contours…</div>
+<div id="tip" class="glass">Clique une commune pour voir sa <b>zone</b>. Recherche pour la situer.</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="data.js"></script>
+<script>
+const ZCOLOR={vert:'#28a745',jaune:'#ffc107',orange:'#fd7e14',rouge:'#dc3545',bleue:'#007bff',none:'#6b7280'};
+const ZNAME={vert:'Vert',jaune:'Jaune',orange:'Orange',rouge:'Rouge — hors secteur',bleue:'Bleu — hors département',none:'Non classée'};
+const communesData=DGF_DATA.communes;
+function norm(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-'’ ]/g,'').toLowerCase();}
+
+const colorByName={};
+communesData.forEach(c=>{ colorByName[norm(c.commune)]=c.color; });
+
+var map=L.map('map',{zoomControl:true,attributionControl:true}).setView([48.80,1.95],10);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+const counts={vert:0,jaune:0,orange:0,rouge:0,bleue:0,none:0};
+const hidden={};
+let layersByZone={vert:[],jaune:[],orange:[],rouge:[],bleue:[],none:[]};
+const layerByName={};
+let logoMarker=null;
+const logoIcon=L.icon({iconUrl:'image.png',iconSize:[60,60],iconAnchor:[30,60]});
+
+function styleFor(z){ return { fillColor:ZCOLOR[z], fillOpacity:0.55, color:'rgba(255,255,255,0.35)', weight:0.8 }; }
+
+function addFeatures(geo){
+  L.geoJSON(geo,{
+    style:f=>{ const z=colorByName[norm(f.properties.nom)]||'none'; return styleFor(z); },
+    onEachFeature:(f,layer)=>{
+      const nom=f.properties.nom; const z=colorByName[norm(nom)]||'none';
+      counts[z]++; layersByZone[z].push(layer); layerByName[norm(nom)]={layer,nom,z};
+      layer.bindTooltip(nom,{sticky:true,direction:'top',className:'zt'});
+      layer.on('click',()=>{
+        layer.setStyle({weight:2.5,color:'#fff'});
+        setTimeout(()=>layer.setStyle({weight:0.8,color:'rgba(255,255,255,0.35)'}),1200);
+        showInfo(nom,z);
+      });
+    }
+  }).addTo(map);
+}
+
+function showInfo(nom,z){
+  const tip=document.getElementById('tip');
+  tip.style.display='block';
+  tip.innerHTML='<b>'+nom+'</b> — '+'<span style="color:'+ZCOLOR[z]+'">●</span> '+ZNAME[z];
+}
+
+function refreshCounts(){
+  ['vert','jaune','orange','rouge','bleue','none'].forEach(z=>{ document.getElementById('c-'+z).textContent=counts[z]||''; });
+}
+
+function loadGeo(dept){
+  return fetch('https://geo.api.gouv.fr/departements/'+dept+'/communes?fields=nom,code&format=geojson&geometry=contour')
+    .then(r=>r.json());
+}
+
+Promise.all([loadGeo('78'), loadGeo('92')]).then(([g78,g92])=>{
+  addFeatures(g78);
+  const bleuesNames=new Set(communesData.filter(c=>c.color==='bleue').map(c=>norm(c.commune)));
+  const g92f={type:'FeatureCollection',features:g92.features.filter(f=>bleuesNames.has(norm(f.properties.nom)))};
+  addFeatures(g92f);
+  fetch('https://geo.api.gouv.fr/departements/78?fields=contour&format=geojson').then(r=>r.json()).then(dep=>{
+    L.geoJSON(dep,{style:{fill:false,color:'#ffffff',weight:2.5,opacity:0.9,dashArray:'4 4'}}).addTo(map);
+  }).catch(()=>{});
+  refreshCounts();
+  document.getElementById('loading').style.display='none';
+  document.getElementById('tip').style.display='block';
+}).catch(e=>{
+  document.getElementById('loading').innerHTML='Impossible de charger les contours.<br>Vérifie ta connexion et recharge.';
+});
+
+document.querySelectorAll('.lrow').forEach(row=>row.onclick=()=>{
+  const z=row.dataset.z; hidden[z]=!hidden[z];
+  row.classList.toggle('off',hidden[z]);
+  layersByZone[z].forEach(l=>l.setStyle({fillOpacity:hidden[z]?0:0.55, opacity:hidden[z]?0:1}));
+});
+
+const searchEl=document.getElementById('search'), suggBox=document.getElementById('suggestions');
+searchEl.addEventListener('input',function(){
+  const val=norm(this.value); suggBox.innerHTML='';
+  if(!val){ suggBox.style.display='none'; return; }
+  const res=communesData.filter(c=>norm(c.commune).startsWith(val)).slice(0,10);
+  if(!res.length){ suggBox.style.display='none'; return; }
+  res.forEach(c=>{
+    const d=document.createElement('div'); d.className='suggestion';
+    d.innerHTML='<span class="sdot" style="background:'+ZCOLOR[c.color]+'"></span>'+c.commune;
+    d.onclick=()=>{ gotoCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; };
+    suggBox.appendChild(d);
+  });
+  suggBox.style.display='block';
+});
+searchEl.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){
+    const val=norm(this.value);
+    const c=communesData.find(x=>norm(x.commune)===val)||communesData.find(x=>norm(x.commune).startsWith(val));
+    if(c){ gotoCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; }
+  }
+});
+document.addEventListener('click',e=>{ if(!document.getElementById('topbar').contains(e.target)) suggBox.style.display='none'; });
+
+function gotoCommune(c){
+  map.setView([c.lat,c.lon],13,{animate:true});
+  if(logoMarker) map.removeLayer(logoMarker);
+  logoMarker=L.marker([c.lat,c.lon],{icon:logoIcon}).addTo(map);
+  const e=layerByName[norm(c.commune)];
+  if(e){ e.layer.setStyle({weight:3,color:'#fff'}); setTimeout(()=>e.layer.setStyle({weight:0.8,color:'rgba(255,255,255,0.35)'}),1500); showInfo(e.nom,e.z); }
+  else { showInfo(c.commune, c.color); }
+}
+</script>
+</body>
+</html>

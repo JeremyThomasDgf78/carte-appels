@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>DGF 78 — Carte des appels</title>
+<link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --glass:rgba(255,255,255,0.72);
+    --glass-dark:rgba(28,32,40,0.78);
+    --bd-soft:rgba(0,0,0,0.08);
+    --txt:#1a1d23; --txt-soft:rgba(26,29,35,0.78); --txt-mute:rgba(26,29,35,0.5);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%; font-family:'Roboto',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+  #map{position:absolute; inset:0; z-index:1;}
+  .glass{ background:var(--glass); -webkit-backdrop-filter:blur(24px) saturate(170%); backdrop-filter:blur(24px) saturate(170%); border:0.5px solid rgba(255,255,255,0.6); box-shadow:0 8px 32px rgba(0,0,0,0.16); }
+
+  /* Logo permanent haut gauche, transparent */
+  #brand{ position:absolute; top:22px; left:22px; z-index:1000; pointer-events:none; }
+  #brand img{ height:100px; width:auto; display:block; filter:drop-shadow(0 3px 10px rgba(0,0,0,0.3)); }
+
+  #topbar{ position:absolute; top:14px; left:50%; transform:translateX(-50%); width:min(480px,86vw); z-index:1000; display:flex; gap:9px; align-items:stretch; }
+  #searchWrap{ position:relative; flex:1; border-radius:15px; }
+  #searchWrap .ic{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--txt-mute); font-size:17px; font-style:normal; pointer-events:none; }
+  #search{ width:100%; padding:12px 15px 12px 42px; border-radius:15px; border:none; outline:none; font-size:16px; color:var(--txt); background:transparent; }
+  #search::placeholder{ color:var(--txt-mute); }
+  #reglages-btn{ flex-shrink:0; display:flex; align-items:center; gap:7px; padding:0 16px; border-radius:15px; color:#fff; font-size:14.5px; font-weight:700; font-family:inherit; cursor:pointer; background:#dc2626; border:none; box-shadow:0 8px 32px rgba(0,0,0,0.2); }
+  #reglages-btn:hover{ background:#b91c1c; }
+  #suggestions{ position:absolute; top:60px; left:0; right:0; border-radius:15px; overflow:hidden; z-index:1001; max-height:44vh; overflow-y:auto; display:none; }
+  .suggestion{ padding:12px 15px; cursor:pointer; font-size:15px; color:var(--txt-soft); display:flex; align-items:center; gap:10px; border-bottom:0.5px solid var(--bd-soft); }
+  .suggestion:hover{ background:rgba(0,0,0,0.05); color:var(--txt); }
+  .sdot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+  #legend{ position:absolute; top:14px; right:14px; z-index:999; border-radius:15px; padding:13px 15px; width:212px; }
+  #legend .lt{ color:var(--txt); font-size:13px; font-weight:600; margin-bottom:8px; }
+  .lrow{ display:flex; align-items:center; gap:8px; margin:6px 0; color:var(--txt-soft); font-size:12.5px; cursor:pointer; }
+  .lrow .ld{ width:13px; height:13px; border-radius:4px; flex-shrink:0; }
+  .lrow .cnt{ margin-left:auto; color:var(--txt-mute); font-size:11.5px; white-space:nowrap; }
+  .lrow.off{ opacity:0.35; }
+  .ltotal{ display:flex; align-items:center; margin-top:8px; padding-top:8px; border-top:0.5px solid var(--bd-soft); color:var(--txt); font-size:12.5px; font-weight:600; }
+  .ltotal .cnt{ margin-left:auto; font-size:12px; }
+
+  #loading{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1500; border-radius:15px; padding:16px 22px; color:var(--txt); font-size:14px; display:flex; align-items:center; gap:11px; }
+  .spin{ width:17px; height:17px; border:2px solid rgba(0,0,0,0.2); border-top-color:var(--txt); border-radius:50%; animation:sp 0.8s linear infinite; }
+  @keyframes sp{ to{ transform:rotate(360deg); } }
+
+  /* Fiche commune — fenêtre flottante, centrée sur le premier tiers de l'écran */
+  #info{ display:none; position:absolute; top:130px; left:max(14px, calc(16.7vw - 260px)); width:min(520px,94vw); max-height:calc(100vh - 160px); border-radius:18px; z-index:1100; flex-direction:column; }
+  #info .icontent{ flex:1; display:flex; flex-direction:column; gap:14px; overflow-y:auto; padding:12px 0; }
+  #info .icontent .ibody{ display:contents; }
+  #info .icontent .catbloc{ margin:0 14px; }
+  #info .icontent .hors-big{ margin:0 18px; }
+  #info .ihead{ padding:12px 18px 10px; border-bottom:0.5px solid var(--bd-soft); position:relative; display:flex; align-items:center; gap:10px; }
+  #info .ititle{ color:var(--txt); font-size:21px; font-weight:700; letter-spacing:-0.2px; white-space:nowrap; overflow:hidden; flex:1; }
+  #info .iclose{ flex-shrink:0; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.55); border:none; color:#fff; font-size:15px; font-weight:700; cursor:pointer; line-height:1; }
+  #info .iclose:hover{ background:rgba(0,0,0,0.75); }
+  .zbadge{ flex-shrink:0; display:inline-flex; align-items:center; font-size:13px; font-weight:700; padding:5px 14px; border-radius:14px; color:#fff; }
+  .subv{ display:block; padding:6px 18px 0; font-size:13px; color:#1c7a3d; font-weight:700; }
+  .bmention{ display:block; padding:4px 18px 0; font-size:13px; color:#1e63c9; font-weight:500; }
+  .catbloc{ border-radius:12px; padding:8px 13px; margin-bottom:12px; border:0.5px solid; }
+  .catbloc.vis{ background:#F1EFE8; border-color:#D3D1C7; }
+  .catbloc.nvis{ background:#EEEDFE; border-color:#CECBF6; }
+  .catbloc.multi{ background:#FAEEDA; border-color:#FAC775; }
+  .catbloc.multi .ct{ color:#633806; }
+  .catbloc.multi .tline{ border-color:#FAC775; }
+  .catbloc.multi .tline .lab{ color:#854F0B; }
+  .catbloc.multi .price{ color:#412402; font-size:15px; }
+  .catbloc .ct{ font-size:14.5px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .catbloc.vis .ct{ color:#444441; }
+  .catbloc.nvis .ct{ color:#3C3489; }
+  .catbloc .tline{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:5px 0; border-bottom:0.5px solid; font-size:14.5px; }
+  .catbloc.vis .tline{ border-color:#D3D1C7; } .catbloc.nvis .tline{ border-color:#CECBF6; }
+  .catbloc .tline:last-child{ border-bottom:none; }
+  .catbloc.vis .tline .lab{ color:#5F5E5A; } .catbloc.nvis .tline .lab{ color:#534AB7; }
+  .catbloc .tline .price{ font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .catbloc.vis .price{ color:#2C2C2A; } .catbloc.nvis .price{ color:#26215C; }
+  .catbloc .seclbl{ font-size:14.5px; font-weight:400; margin:6px 0 5px; color:#5F5E5A; }
+  .arbres{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:2px; }
+  .acard{ background:rgba(255,255,255,0.85); border:0.5px solid #D3D1C7; border-radius:10px; padding:6px 3px; text-align:center; }
+  .acard .h{ color:#5F5E5A; font-size:12.5px; white-space:nowrap; }
+  .acard .p{ color:#2C2C2A; font-size:16px; font-weight:700; margin-top:1px; }
+  .hors-big{ color:#c22; font-size:16px; font-weight:700; padding:10px 4px; }
+  .iblocpro{ margin:0 14px; background:#FCEBEB; border:0.5px solid #F09595; border-radius:12px; padding:11px 14px; }
+  .iblocpro .pro{ color:#A32D2D; font-weight:700; font-size:14px; margin-bottom:7px; white-space:nowrap; }
+  .iblocpro .prow{ display:flex; justify-content:space-between; gap:10px; font-size:13px; color:#791F1F; padding:6px 0; border-bottom:0.5px solid #F7C1C1; }
+  .iblocpro .prow:nth-last-child(2){ border-bottom:none; }
+  .iblocpro .prow b{ font-weight:700; white-space:nowrap; }
+  .icalc{ margin-top:9px; padding-top:9px; border-top:0.5px solid #F7C1C1; }
+  .icalc .ct2{ font-size:13px; font-weight:700; color:#A32D2D; margin-bottom:7px; }
+  .icalc .crow{ display:flex; gap:8px; align-items:center; }
+  .icalc input{ flex:1; min-width:0; background:#ffffff; color:#1a1d23; border:0.5px solid #F09595; border-radius:8px; height:35px; padding:0 11px; font-family:inherit; font-size:14px; outline:none; }
+  .icalc .heq{ font-size:13.5px; color:#791F1F; white-space:nowrap; }
+  .icalc .hres{ font-size:17px; font-weight:700; color:#000; min-width:80px; text-align:right; white-space:nowrap; }
+  #info .ibtns{ padding:0 14px 12px; display:flex; gap:9px; }
+  #info .ibtns a{ flex:1; display:flex; align-items:center; justify-content:center; padding:10px 6px; border-radius:10px; color:#fff; text-decoration:none; font-size:14px; font-weight:700; }
+  .btn-plan{ background:#16a34a; }
+  .btn-cli{ background:#2563eb; }
+  .eyeic{ flex-shrink:0; }
+
+  .pin svg{ display:block; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.35)); }
+
+  /* ===== Modale réglages ===== */
+  #overlay{ display:none; position:absolute; inset:0; z-index:2000; background:rgba(15,18,24,0.35); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
+  #settings{ display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:min(680px,94vw); max-height:90vh; overflow-y:auto; border-radius:20px; z-index:2001; }
+  #settings .shead{ padding:18px 22px 14px; border-bottom:0.5px solid var(--bd-soft); display:flex; align-items:center; gap:10px; position:sticky; top:0; background:var(--glass); -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px); border-radius:20px 20px 0 0; z-index:5; }
+  #settings .shead h2{ margin:0; font-size:19px; font-weight:700; color:var(--txt); letter-spacing:-0.2px; }
+  #settings .sclose{ margin-left:auto; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.07); border:none; color:var(--txt-mute); font-size:15px; cursor:pointer; }
+  .swarn{ margin:14px 20px 0; background:rgba(251,146,20,0.1); border:0.5px solid rgba(251,146,20,0.3); border-radius:12px; padding:11px 14px; font-size:13px; color:#8a5200; line-height:1.5; }
+  .swarn b{ color:#6b3f00; }
+  .stabs{ display:flex; gap:8px; padding:14px 20px 0; flex-wrap:wrap; }
+  .stab{ flex:1; min-width:130px; padding:13px 10px; border-radius:13px; border:1px solid var(--bd-soft); background:rgba(0,0,0,0.05); color:var(--txt-soft); font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .stab.active{ background:rgba(37,99,235,0.16); color:#1e50b0; border-color:rgba(37,99,235,0.45); }
+  .spanel{ display:none; padding:16px 20px 20px; }
+  .spanel.active{ display:block; }
+  .spanel label{ font-size:14.5px; font-weight:700; color:var(--txt); display:block; margin:12px 0 7px; }
+  .spanel label:first-child{ margin-top:0; }
+  .spanel input[type=text], .spanel select{ width:100%; padding:12px 14px; font-size:16px; font-family:inherit; border-radius:11px; border:0.5px solid rgba(0,0,0,0.15); background:rgba(255,255,255,0.7); color:var(--txt); outline:none; }
+  .ssugg div{ padding:11px 14px; cursor:pointer; font-size:15px; color:var(--txt-soft); border-bottom:0.5px solid var(--bd-soft); display:flex; align-items:center; gap:9px; background:rgba(255,255,255,0.5); }
+  .ssugg div:hover{ background:rgba(0,0,0,0.05); }
+  .badge{ font-size:12px; padding:4px 11px; border-radius:12px; color:#fff; font-weight:700; }
+  .spanel table{ width:100%; border-collapse:collapse; margin-top:6px; }
+  .spanel td{ padding:10px 4px; border-bottom:0.5px solid var(--bd-soft); font-size:14px; color:var(--txt-soft); }
+  .spanel td input{ width:110px; padding:9px 11px; font-size:15px; font-family:inherit; font-weight:700; border-radius:9px; border:0.5px solid rgba(0,0,0,0.15); background:rgba(255,255,255,0.7); text-align:right; }
+  .hintx{ font-size:12.5px; color:var(--txt-mute); margin-top:7px; }
+  .exc-row{ display:flex; gap:8px; align-items:center; margin:7px 0; }
+  .exc-row .l{ flex:1; font-size:13.5px; color:var(--txt-soft); }
+  .exc-row input{ width:102px; padding:9px 11px; font-size:15px; font-family:inherit; font-weight:700; border-radius:9px; border:0.5px solid rgba(0,0,0,0.15); background:rgba(255,255,255,0.7); text-align:right; }
+  .sbtn{ border:none; border-radius:12px; padding:12px 18px; font-size:14.5px; font-weight:700; cursor:pointer; color:#fff; font-family:inherit; }
+  .sbtn-blue{ background:#2563eb; }
+  .sbtn-gray{ background:rgba(0,0,0,0.35); }
+  .sfoot{ position:sticky; bottom:0; padding:14px 20px; display:flex; gap:12px; align-items:center; border-top:0.5px solid var(--bd-soft); background:var(--glass); -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px); border-radius:0 0 20px 20px; }
+  .sstatus{ font-size:13.5px; font-weight:700; }
+  .sstatus.pending{ color:#b45309; }
+  .sstatus.ok{ color:#15803d; }
+  .sbtn-export{ margin-left:auto; background:#16a34a; }
+
+  /* Sélection par lot sur carte */
+  .selzone{ margin-top:18px; padding-top:14px; border-top:0.5px solid var(--bd-soft); }
+  .selrow{ display:flex; gap:9px; align-items:stretch; }
+  .selrow select{ flex:1; }
+  .selrow .sbtn{ flex-shrink:0; white-space:nowrap; }
+  #selbar{ display:none; position:absolute; left:50%; bottom:22px; transform:translateX(-50%); z-index:1900; border-radius:16px; padding:12px 18px; align-items:center; gap:14px; }
+  #selbar .seldot{ width:14px; height:14px; border-radius:4px; flex-shrink:0; border:2px solid #c026d3; background:rgba(192,38,211,0.5); }
+  #selbar span{ font-size:14.5px; font-weight:700; color:var(--txt); white-space:nowrap; }
+  .sbtn-apply{ background:#16a34a; }
+
+  /* Aide à la prise d'appel */
+  #aideBtn{ position:absolute; bottom:40px; right:14px; z-index:1200; display:flex; align-items:center; gap:6px; padding:11px 16px; border-radius:13px; cursor:pointer; font-family:inherit; font-size:13.5px; font-weight:700; color:var(--txt); background:rgba(255,255,255,0.78); -webkit-backdrop-filter:blur(20px) saturate(160%); backdrop-filter:blur(20px) saturate(160%); border:0.5px solid rgba(255,255,255,0.6); box-shadow:0 6px 24px rgba(0,0,0,0.15); }
+  #aideBtn:hover{ background:rgba(255,255,255,0.92); }
+  #aide{ display:none; position:absolute; top:76px; bottom:40px; right:240px; width:min(440px,60vw); border-radius:18px; z-index:1250; flex-direction:column; overflow:hidden; }
+  @media(max-width:1100px){ #aide{ right:14px; max-height:78vh; width:min(440px,94vw); } }
+  #aide .ahead{ padding:15px 18px 13px; border-bottom:0.5px solid var(--bd-soft); display:flex; align-items:center; gap:10px; }
+  #aide .ahead .at{ flex:1; font-size:17px; font-weight:700; color:var(--txt); letter-spacing:-0.2px; }
+  #aide .ahead .asub{ margin-top:9px; background:rgba(37,99,235,0.09); border:0.5px solid rgba(37,99,235,0.28); border-radius:10px; padding:8px 12px; font-size:13px; font-weight:400; color:#1e50b0; line-height:1.7; }
+  #aide .ahead .asub b{ font-weight:700; }
+  #aide .aclose{ flex-shrink:0; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.55); border:none; color:#fff; font-size:15px; font-weight:700; cursor:pointer; line-height:1; }
+  #aide .abody{ flex:1; overflow-y:auto; padding:14px 16px; }
+  .astep{ position:relative; padding:13px 14px 13px 48px; border-radius:12px; border:1.5px solid; margin-bottom:14px; cursor:pointer; transition:background 0.15s,border-color 0.15s; }
+  .astep .anum{ position:absolute; left:13px; top:14px; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; }
+  .astep .atit{ font-size:14.5px; font-weight:700; margin-bottom:6px; }
+  .astep .adet{ font-size:12.5px; line-height:1.6; }
+  .astep .adet p{ margin:0 0 9px; }
+  .astep .adet p:last-child{ margin-bottom:0; }
+  .astep .adet b{ font-weight:700; }
+  .astep.todo{ background:#FCEBEB; border-color:#F09595; }
+  .astep.todo .anum{ background:#dc2626; }
+  .astep.todo .atit{ color:#A32D2D; }
+  .astep.todo .adet{ color:#791F1F; }
+  .astep.done{ background:#E1F5EE; border-color:#9FE1CB; opacity:0.75; }
+  .astep.done .anum{ background:#16a34a; }
+  .astep.done .atit{ color:#085041; text-decoration:line-through; }
+  .astep.done .adet{ color:#0F6E56; display:none; }
+  .astep.wait{ background:rgba(0,0,0,0.03); border-color:var(--bd-soft); }
+  .astep.wait .anum{ background:rgba(0,0,0,0.25); }
+  .astep.wait .atit{ color:var(--txt-mute); }
+  .astep.wait .adet{ color:var(--txt-mute); display:none; }
+
+  /* Pop-up intégré (remplace alert/confirm) */
+  #popov{ display:none; position:absolute; inset:0; z-index:3000; background:rgba(15,18,24,0.4); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); }
+  #popup{ display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:min(420px,90vw); border-radius:18px; z-index:3001; padding:22px 22px 18px; }
+  #popup.pop-red{ border:1.5px solid rgba(220,38,38,0.55); }
+  #popup.pop-green{ border:1.5px solid rgba(22,163,74,0.55); }
+  #popup .pic{ width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 12px; }
+  #popup.pop-red .pic{ background:rgba(220,38,38,0.12); color:#c22; }
+  #popup.pop-green .pic{ background:rgba(22,163,74,0.12); color:#15803d; }
+  #popup.pop-blue .pic{ background:rgba(37,99,235,0.12); color:#1e50b0; }
+  #popup .pt{ font-size:17px; font-weight:700; color:var(--txt); text-align:center; margin-bottom:8px; }
+  #popup .pm{ font-size:14px; color:var(--txt-soft); text-align:center; line-height:1.6; margin-bottom:16px; }
+  #popup .pm b{ color:var(--txt); font-weight:700; }
+  #popup .pbtns{ display:flex; gap:9px; }
+  #popup .pbtns .sbtn{ flex:1; }
+  .sbtn-red{ background:#dc2626; }
+
+  /* Scrollbar fine et discrète (modale, fiche, suggestions) */
+  #settings, #info, #info .icontent, #suggestions{ scrollbar-width:thin; scrollbar-color:rgba(0,0,0,0.22) transparent; }
+  #settings::-webkit-scrollbar, #info::-webkit-scrollbar, #info .icontent::-webkit-scrollbar, #suggestions::-webkit-scrollbar{ width:6px; }
+  #settings::-webkit-scrollbar-track, #info::-webkit-scrollbar-track, #info .icontent::-webkit-scrollbar-track, #suggestions::-webkit-scrollbar-track{ background:transparent; }
+  #settings::-webkit-scrollbar-thumb, #info::-webkit-scrollbar-thumb, #info .icontent::-webkit-scrollbar-thumb, #suggestions::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.22); border-radius:99px; }
+  #settings::-webkit-scrollbar-thumb:hover, #info .icontent::-webkit-scrollbar-thumb:hover{ background:rgba(0,0,0,0.38); }
+
+  .leaflet-control-zoom{ display:none; }
+  .leaflet-interactive, .leaflet-interactive:focus{ outline:none !important; }
+  .commune-tt{ background:var(--glass-dark)!important; color:#fff!important; border:none!important; border-radius:8px!important; font-size:12.5px!important; padding:4px 10px!important; box-shadow:0 4px 14px rgba(0,0,0,0.25)!important; }
+  .commune-tt::before{ display:none!important; }
+
+  @media(max-width:700px){
+    #brand img{ height:52px; } #brand{ top:12px; left:12px; }
+    #topbar{ top:8px; width:min(330px,72vw); left:auto; right:8px; transform:none; }
+    #reglages-btn span{ display:none; }
+    #legend{ top:auto; bottom:8px; right:8px; width:158px; padding:10px 11px; }
+    .lrow{ font-size:11px; margin:4px 0; }
+    #info{ top:auto; bottom:8px; left:8px; width:min(360px,94vw); max-height:72vh; }
+    .iblocpro .pro{ white-space:normal; }
+    .arbres{ grid-template-columns:repeat(2,1fr); }
+  }
+  @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){ .glass{ background:rgba(255,255,255,0.95); } }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="brand"><img src="image.png" alt="DGF 78"/></div>
+
+<div id="topbar">
+  <div id="searchWrap" class="glass"><i class="ic">&#128269;</i><input id="search" type="text" placeholder="Rechercher une commune" autocomplete="off"/></div>
+  <button id="reglages-btn" onclick="toggleAide()">Aide à la prise d'appel</button>
+  <div id="suggestions" class="glass"></div>
+</div>
+
+<div id="legend" class="glass">
+  <div class="lt">Communes par zone</div>
+  <div class="lrow" data-z="verte"><span class="ld" style="background:#28a745"></span>Verte<span class="cnt" id="c-verte"></span></div>
+  <div class="lrow" data-z="orange"><span class="ld" style="background:#fd7e14"></span>Orange<span class="cnt" id="c-orange"></span></div>
+  <div class="lrow" data-z="bleue"><span class="ld" style="background:#007bff"></span>Bleu (hors dépt)<span class="cnt" id="c-bleue"></span></div>
+  <div class="lrow" data-z="rouge"><span class="ld" style="background:#dc3545"></span>Rouge (hors secteur)<span class="cnt" id="c-rouge"></span></div>
+  <div class="lrow" data-z="none"><span class="ld" style="background:#9aa0aa"></span>Non classée<span class="cnt" id="c-none"></span></div>
+  <div class="ltotal">Total<span class="cnt" id="c-total"></span></div>
+</div>
+
+<div id="loading" class="glass"><div class="spin"></div>Chargement des zones…</div>
+
+<div id="info" class="glass">
+  <div class="ihead">
+    <div class="ititle" id="iTitle"></div>
+    <span class="zbadge" id="iBadge"></span>
+    <button class="iclose" onclick="closeInfo()">&#10005;</button>
+  </div>
+  <div id="iMeta"></div>
+  <div class="icontent">
+  <div class="ibody" id="iBody"></div>
+  <div class="iblocpro" id="iPro">
+    <div class="pro">&#9888; Si client PRO — calculer prix et donner le montant HT avant TTC</div>
+    <div class="prow"><span>Si paiement sur place</span><b>ajouter 20 € au tarif TTC</b></div>
+    <div class="prow"><span>Si paiement à 30 jours</span><b>ajouter 40 € au tarif TTC</b></div>
+    <div class="prow"><span>Chèque</span><b>Accepté pour les pros</b></div>
+    <div class="icalc">
+      <div class="ct2">&#128425; Calculette du montant hors taxes (TVA 20 %)</div>
+      <div class="crow">
+        <input id="iTtc" type="text" inputmode="decimal" placeholder="Saisir le montant TTC"/>
+        <span class="heq">HT =</span>
+        <span class="hres" id="iHt">— €</span>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="ibtns">
+    <a class="btn-plan" href="https://destructionguepesetfrelons.organilog.com/planning" target="_blank">Consulter planning</a>
+    <a class="btn-cli" href="https://destructionguepesetfrelons.organilog.com/client_edit.php" target="_blank">&#43; Ajouter client</a>
+  </div>
+</div>
+
+<!-- Aide à la prise d'appel -->
+<button id="aideBtn" onclick="openSettings()">&#9881; Réglages</button>
+<div id="aide" class="glass">
+  <div class="ahead">
+    <div class="at">Déroulement de la prise d'appels — Étapes
+      <div class="asub">
+        <div>&#10142; Cliquer sur l'étape <b>suivante</b> pour valider l'étape en cours</div>
+        <div>&#10142; Cliquer sur une étape <b>précédente</b> pour y revenir</div>
+      </div>
+    </div>
+    <button class="aclose" onclick="toggleAide()">&#10005;</button>
+  </div>
+  <div class="abody">
+    <div class="astep" data-i="0">
+      <span class="anum">1</span>
+      <div class="atit">Accueil client — « DGF bonjour ! »</div>
+      <div class="adet">
+        <p>Laisser le client exposer le problème <b>brièvement</b>.</p>
+        <p><b>Demander tout de suite la commune</b> et la saisir dans la barre de recherche.</p>
+        <p>Vérification du secteur et des prix sur la carte.</p>
+      </div>
+    </div>
+    <div class="astep" data-i="1">
+      <span class="anum">2</span>
+      <div class="atit">Déterminer l'intervention</div>
+      <div class="adet">
+        <p><b>Type d'insectes :</b> abeilles / guêpes / frelons / bourdons.</p>
+        <p><b>Localisation :</b> demander les éléments de hauteur.</p>
+        <p><b>Nid visible ?</b> Bruit si nid toiture ou intérieur, etc.</p>
+        <p><b>Canaliser la conversation.</b></p>
+      </div>
+    </div>
+    <div class="astep" data-i="2">
+      <span class="anum">3</span>
+      <div class="atit">Annoncer une intervention possible rapidement</div>
+      <div class="adet">
+        <p>Demander au client s'il est <b>facilement disponible</b> pour intervenir au plus vite.</p>
+        <p><b>Ne pas encore consulter le planning.</b></p>
+      </div>
+    </div>
+    <div class="astep" data-i="3">
+      <span class="anum">4</span>
+      <div class="atit">Discours avant annonce du tarif affiché</div>
+      <div class="adet">
+        <p>« Chez nous, <b>pas de mauvaises surprises</b> une fois sur place ! Ce tarif forfaitaire comprend la TVA, le déplacement, l'intervention de destruction, les produits et la main-d'œuvre, la reconnaissance caméra thermique si nécessaire. Nos interventions abeilles, guêpes et frelons sont <b>garanties 90 jours</b> : en cas de persistance à l'endroit traité, nous réintervenons gratuitement. »</p>
+        <p>En cas de doute, donner une <b>fourchette de prix</b>.</p>
+      </div>
+    </div>
+    <div class="astep" data-i="4">
+      <span class="anum">5</span>
+      <div class="atit">Consulter le planning ou ajouter le client</div>
+      <div class="adet">
+        <p>Utiliser les boutons <b>Consulter planning</b> / <b>Ajouter client</b> de la fiche de gauche.</p>
+        <p>Valider le RDV et préciser : règlement <b>par carte bancaire</b> (nous sommes équipés de terminaux) <b>ou en espèces</b>.</p>
+        <p><b>&#9888; Les chèques ne sont pas acceptés.</b> Facture envoyée par mail sous 7 jours.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pop-up intégré -->
+<div id="popov"></div>
+<div id="popup" class="glass">
+  <div class="pic" id="pIcon"></div>
+  <div class="pt" id="pTitle"></div>
+  <div class="pm" id="pMsg"></div>
+  <div class="pbtns" id="pBtns"></div>
+</div>
+
+<!-- Barre mode sélection sur carte -->
+<div id="selbar" class="glass">
+  <span class="seldot" id="selDot"></span>
+  <span id="selTxt">0 commune sélectionnée</span>
+  <button class="sbtn sbtn-apply" id="selApply">Appliquer</button>
+  <button class="sbtn sbtn-gray" id="selCancel">Annuler</button>
+</div>
+
+<!-- Modale réglages -->
+<div id="overlay" onclick="tryCloseSettings()"></div>
+<div id="settings" class="glass">
+  <div class="shead">
+    <h2>&#9881; Réglages de l'application — <span style="color:#dc2626;">(ne rien modifier sauf administrateur)</span></h2>
+    <button class="sclose" onclick="tryCloseSettings()">&#10005;</button>
+  </div>
+  <div class="swarn"><b>Rappel :</b> les modifications ne seront en ligne qu'après <b>Exporter data.js</b> + redépôt du fichier sur GitHub.</div>
+  <div class="stabs">
+    <button class="stab active" data-p="sp1">Couleur commune</button>
+    <button class="stab" data-p="sp2">Tarifs par zone</button>
+    <button class="stab" data-p="sp3">Exception</button>
+  </div>
+  <div class="spanel active" id="sp1">
+    <label>Chercher une commune</label>
+    <input type="text" id="ss1" placeholder="Ex : Versailles" autocomplete="off"/>
+    <div id="ssg1" class="ssugg"></div>
+    <div id="scur1" style="margin-top:12px; font-size:14px; color:var(--txt);"></div>
+    <div id="spick1" style="display:none;">
+      <label>Changer sa zone couleur</label>
+      <select id="ssel1"></select>
+      <div class="hintx">La carte se recolore immédiatement. La commune prend la grille de sa nouvelle couleur.</div>
+    </div>
+    <div class="selzone">
+      <label>Ou sélectionner directement sur la carte</label>
+      <div class="selrow">
+        <select id="sselZone"></select>
+        <button class="sbtn sbtn-blue" id="sbtnSelMode">Sélectionner sur la carte</button>
+      </div>
+      <div class="hintx">La fenêtre se ferme : clique sur les communes à passer dans cette zone (re-clic = désélection), puis Appliquer.</div>
+    </div>
+  </div>
+  <div class="spanel" id="sp2">
+    <label>Zone à modifier</label>
+    <select id="szsel"></select>
+    <table><tbody id="sztb"></tbody></table>
+    <div class="hintx">S'applique à toutes les communes de cette couleur (sauf exceptions).</div>
+  </div>
+  <div class="spanel" id="sp3">
+    <label>Commune pour un tarif spécifique</label>
+    <input type="text" id="ss3" placeholder="Ex : Rambouillet" autocomplete="off"/>
+    <div id="ssg3" class="ssugg"></div>
+    <div id="sed3" style="display:none; margin-top:12px;"></div>
+  </div>
+  <div class="sfoot">
+    <span id="sstatus" class="sstatus ok">&#10003; Aucune modification</span>
+    <button class="sbtn sbtn-export" id="sbtnExport">&#8595; Exporter data.js</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="data.js"></script>
+<script>
+const ZCOLOR={verte:'#28a745',orange:'#fd7e14',rouge:'#dc3545',bleue:'#007bff',none:'#9aa0aa'};
+const ZNAME={verte:'Verte',orange:'Orange',rouge:'Rouge — hors secteur',bleue:'Bleu — hors département',none:'Non classée'};
+const CN={verte:'Verte',orange:'Orange',bleue:'Bleu (hors dépt)',rouge:'Rouge (hors secteur)'};
+const communesCCHVC=["Chevreuse","Choisel","Dampierre-En-Yvelines","Le Mesnil-Saint-Denis","Lévis-Saint-Nom","Milon-La-Chapelle","Saint-Forget","Saint-Lambert-Des-Bois","Saint-Rémy-Lès-Chevreuse","Senlisse"];
+
+/* D = données de travail (modifiables et exportables) */
+let D=JSON.parse(JSON.stringify(DGF_DATA)); if(!D.exceptions) D.exceptions={};
+let selMode=false, selTarget=null; const selSet=new Map();
+function norm(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-'’ ]/g,'').toLowerCase();}
+const byName={}; D.communes.forEach(c=>byName[norm(c.commune)]=c);
+
+var map=L.map('map',{zoomControl:false}).setView([48.80,1.95],10);
+var homeBounds=null;
+function goHome(){ if(homeBounds) map.fitBounds(homeBounds,{padding:[20,20],animate:true}); else map.setView([48.80,1.95],10,{animate:true}); }
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ attribution:'© OpenStreetMap contributors', maxZoom:19 }).addTo(map);
+
+function makePin(){
+  return L.divIcon({ className:'pin',
+    html:'<svg width="16" height="22" viewBox="0 0 16 22" xmlns="http://www.w3.org/2000/svg"><path d="M8 0C3.6 0 .5 3.2.5 7.5c0 5.4 7.5 14 7.5 14s7.5-8.6 7.5-14C15.5 3.2 12.4 0 8 0z" fill="#e11d2e" stroke="#ffffff" stroke-width="1"/><circle cx="8" cy="7.5" r="2.6" fill="#fff"/></svg>',
+    iconSize:[16,22], iconAnchor:[8,22] });
+}
+var pinMarker=null;
+function setPin(latlng){ if(pinMarker) map.removeLayer(pinMarker); pinMarker=L.marker(latlng,{icon:makePin(),interactive:false}).addTo(map); }
+
+const FILL_OPACITY=0.40;
+const counts={verte:0,orange:0,rouge:0,bleue:0,none:0};
+const hidden={};
+let layersByZone={verte:[],orange:[],rouge:[],bleue:[],none:[]};
+const layerByName={};
+
+function zoneOf(nom){ const c=byName[norm(nom)]; return c?c.color:'none'; }
+function styleFor(z){ return { fillColor:ZCOLOR[z]||ZCOLOR.none, fillOpacity:FILL_OPACITY, color:'rgba(40,44,52,0.45)', weight:0.7 }; }
+
+function addFeatures(geo){
+  L.geoJSON(geo,{
+    style:f=>styleFor(zoneOf(f.properties.nom)),
+    onEachFeature:(f,layer)=>{
+      const nom=f.properties.nom;
+      const z=zoneOf(nom);
+      counts[z]++; (layersByZone[z]||layersByZone.none).push(layer); layerByName[norm(nom)]={layer,z};
+      layer.bindTooltip(nom,{sticky:true,direction:'top',className:'commune-tt',opacity:1});
+      layer.on('click',()=>{
+        if(selMode){ toggleSelect(nom,layer); return; }
+        highlight(layer);
+        const center=layer.getBounds().getCenter();
+        setPin(center);
+        const c=byName[norm(nom)];
+        if(c) openInfo(c); else openInfoUnclassified(nom);
+        centerOn(center,12);
+      });
+    }
+  }).addTo(map);
+}
+function highlight(layer){
+  layer.setStyle({weight:2.6,color:'#1a1d23'});
+  setTimeout(()=>layer.setStyle({weight:0.7,color:'rgba(40,44,52,0.45)'}),1400);
+}
+function recolorAll(){
+  Object.keys(layersByZone).forEach(z=>layersByZone[z]=[]);
+  Object.keys(counts).forEach(z=>counts[z]=0);
+  Object.keys(layerByName).forEach(k=>{
+    const e=layerByName[k];
+    const z=zoneOf(e.layer.getTooltip().getContent());
+    e.z=z; counts[z]++; layersByZone[z].push(e.layer);
+    e.layer.setStyle(styleFor(z));
+    if(hidden[z]) e.layer.setStyle({fillOpacity:0,opacity:0});
+  });
+  refreshLegend();
+}
+function refreshLegend(){
+  let total=0;
+  ['verte','orange','rouge','bleue','none'].forEach(z=>{
+    total+=counts[z];
+    document.getElementById('c-'+z).textContent=counts[z]?counts[z]+' commune'+(counts[z]>1?'s':''):'';
+  });
+  document.getElementById('c-total').textContent=total+' communes';
+}
+
+function loadGeo(d){ return fetch('https://geo.api.gouv.fr/departements/'+d+'/communes?fields=nom,code&format=geojson&geometry=contour').then(r=>r.json()); }
+Promise.all([loadGeo('78'),loadGeo('92'),loadGeo('91')]).then(([g78,g92,g91])=>{
+  addFeatures(g78);
+  const noms78=new Set(g78.features.map(f=>norm(f.properties.nom)));
+  const horsDept=new Set(D.communes.map(c=>norm(c.commune)).filter(n=>!noms78.has(n)));
+  [g92,g91].forEach(g=>addFeatures({type:'FeatureCollection',features:g.features.filter(f=>horsDept.has(norm(f.properties.nom)))}));
+  fetch('https://geo.api.gouv.fr/departements/78?fields=contour&format=geojson').then(r=>r.json()).then(dep=>{
+    const depLayer=L.geoJSON(dep,{style:{fill:false,color:'#1a1d23',weight:2.2,opacity:0.65,dashArray:'5 5'}}).addTo(map);
+    homeBounds=depLayer.getBounds();
+    map.fitBounds(homeBounds,{padding:[20,20]});
+  }).catch(()=>{});
+  refreshLegend();
+  document.getElementById('loading').style.display='none';
+}).catch(()=>{ document.getElementById('loading').innerHTML='Impossible de charger les zones.<br>Vérifie ta connexion et recharge.'; });
+
+document.querySelectorAll('.lrow').forEach(row=>row.onclick=()=>{
+  const z=row.dataset.z; hidden[z]=!hidden[z];
+  row.classList.toggle('off',hidden[z]);
+  layersByZone[z].forEach(l=>l.setStyle({fillOpacity:hidden[z]?0:FILL_OPACITY, opacity:hidden[z]?0:1}));
+});
+
+function hexA(hex,a){ const n=parseInt(hex.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+function darken(hex){ const n=parseInt(hex.slice(1),16); let r=(n>>16),g=(n>>8)&255,b=n&255; return 'rgb('+Math.round(r*0.55)+','+Math.round(g*0.55)+','+Math.round(b*0.55)+')'; }
+
+function fitTitle(el){
+  el.style.fontSize='22px';
+  let fs=22;
+  while(el.scrollWidth>el.clientWidth && fs>13){ fs-=0.5; el.style.fontSize=fs+'px'; }
+}
+const EYE_OPEN='<svg class="eyeic" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#444441" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg class="eyeic" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3C3489" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-2.2 3.2M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7c1.8 0 3.4-.5 4.8-1.2M9.9 9.9a3 3 0 0 0 4.2 4.2"/><line x1="3" y1="3" x2="21" y2="21"/></svg>';
+
+/* Centre un point dans la zone visible à droite de la fiche (si ouverte) */
+function centerOn(latlng,zoomTo){
+  const infoEl=document.getElementById('info');
+  const open=infoEl.style.display==='flex' && window.innerWidth>700;
+  const offsetX=open?(infoEl.offsetWidth+14)/2:0;
+  const z=(zoomTo!=null)?zoomTo:map.getZoom();
+  const pt=map.project(latlng,z).subtract([offsetX,0]);
+  map.setView(map.unproject(pt,z),z,{animate:true});
+}
+
+/* tarifs : indices 0=visible ≤3m, 1-4=hauteur, 5=non visible ≤3m, 6=sous toiture, 7=cheminée */
+function openInfo(c){
+  const p=D.exceptions[c.commune]?D.exceptions[c.commune]:D.grilles[c.color];
+  const isHors=String(p[0]).toLowerCase().includes('hors secteur');
+  const col=ZCOLOR[c.color];
+  const titleEl=document.getElementById('iTitle');
+  titleEl.textContent=c.commune+(c.cp?' — '+c.cp:'');
+  const badge=document.getElementById('iBadge');
+  badge.style.background=col;
+  badge.textContent='Zone '+ZNAME[c.color].split(' —')[0].toLowerCase();
+  let meta='';
+  if(c.color==='bleue') meta+='<span class="bmention">Hors département — intervention possible</span>';
+  if(communesCCHVC.map(x=>x.toLowerCase()).includes(c.commune.toLowerCase())) meta+='<span class="subv">&#10003; Subvention CCHVC frelon asiatique</span>';
+  document.getElementById('iMeta').innerHTML=meta;
+  let b='';
+  if(isHors){ b='<div class="hors-big">&#9888; Hors secteur d\'intervention</div>'; }
+  else{
+    b+='<div class="catbloc vis"><div class="ct">'+EYE_OPEN+'Nid visible</div>';
+    b+='<div class="tline"><span class="lab">Accessible (≤ 3 m)</span><span class="price">'+p[0]+'</span></div>';
+    b+='<div class="seclbl">En hauteur (arbre ou autre)</div><div class="arbres">';
+    const h=['3–10 m','10–15 m','15–20 m','20–30 m'];
+    h.forEach((lbl,i)=>{ b+='<div class="acard"><div class="h">'+lbl+'</div><div class="p">'+p[1+i]+'</div></div>'; });
+    b+='</div></div>';
+    b+='<div class="catbloc nvis"><div class="ct">'+EYE_OFF+'Nid non visible</div>';
+    b+='<div class="tline"><span class="lab">≤ 3 m · terre / toiture / volet roulant</span><span class="price">'+p[5]+'</span></div>';
+    b+='<div class="tline"><span class="lab">Sous toiture</span><span class="price">'+p[6]+'</span></div>';
+    b+='<div class="tline"><span class="lab">Cheminée (abeilles ou frelons)</span><span class="price">'+p[7]+'</span></div>';
+    b+='</div>';
+    b+='<div class="catbloc multi"><div class="ct"><span class="eyeic" style="font-size:17px;">&#10133;</span>Plusieurs nids</div>';
+    b+='<div class="tline"><span class="lab">Tarif du nid le plus cher</span><span class="price">+ 50 € / nid supplémentaire</span></div>';
+    b+='</div>';
+  }
+  document.getElementById('iBody').innerHTML=b;
+  document.getElementById('iPro').style.display=isHors?'none':'block';
+  document.getElementById('info').style.display='flex';
+  fitTitle(titleEl);
+}
+document.getElementById('iTtc').addEventListener('input',function(){
+  const v=parseFloat(this.value.replace(',','.'));
+  document.getElementById('iHt').textContent=isNaN(v)?'— €':(v/1.2).toFixed(2).replace('.',',')+' €';
+});
+function openInfoUnclassified(nom){
+  const titleEl=document.getElementById('iTitle');
+  titleEl.textContent=nom;
+  const badge=document.getElementById('iBadge');
+  badge.style.background='#9aa0aa'; badge.textContent='Non classée';
+  document.getElementById('iMeta').innerHTML='';
+  document.getElementById('iBody').innerHTML='<div style="color:var(--txt-mute);font-size:13px;padding:8px 4px;">Aucune zone attribuée. Classe-la via ⚙ Réglages.</div>';
+  document.getElementById('iPro').style.display='none';
+  document.getElementById('info').style.display='flex';
+  fitTitle(titleEl);
+}
+function closeInfo(){
+  document.getElementById('info').style.display='none';
+  if(pinMarker){ map.removeLayer(pinMarker); pinMarker=null; }
+  goHome();
+}
+
+const searchEl=document.getElementById('search'), suggBox=document.getElementById('suggestions');
+searchEl.addEventListener('input',function(){
+  const val=norm(this.value); suggBox.innerHTML='';
+  if(!val){ suggBox.style.display='none'; return; }
+  const res=D.communes.filter(c=>norm(c.commune).startsWith(val)).slice(0,10);
+  if(!res.length){ suggBox.style.display='none'; return; }
+  res.forEach(c=>{
+    const d=document.createElement('div'); d.className='suggestion';
+    d.innerHTML='<span class="sdot" style="background:'+ZCOLOR[c.color]+'"></span>'+c.commune;
+    d.onclick=()=>{ gotoCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; };
+    suggBox.appendChild(d);
+  });
+  suggBox.style.display='block';
+});
+searchEl.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){
+    const val=norm(this.value);
+    const c=D.communes.find(x=>norm(x.commune)===val)||D.communes.find(x=>norm(x.commune).startsWith(val));
+    if(c){ gotoCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; }
+  }
+});
+document.addEventListener('click',e=>{ if(!document.getElementById('topbar').contains(e.target)) suggBox.style.display='none'; });
+
+function gotoCommune(c){
+  const e=layerByName[norm(c.commune)];
+  const center=e?e.layer.getBounds().getCenter():L.latLng(c.lat,c.lon);
+  if(e) highlight(e.layer);
+  setPin(center);
+  openInfo(c);
+  centerOn(center,12);
+}
+
+/* ===== Aide à la prise d'appel ===== */
+let aideState=0;
+function toggleAide(){
+  const a=document.getElementById('aide');
+  const open=a.style.display==='flex';
+  a.style.display=open?'none':'flex';
+  if(!open){ aideState=0; renderAide(); }
+}
+function renderAide(){
+  document.querySelectorAll('.astep').forEach(s=>{
+    const i=+s.dataset.i;
+    s.className='astep '+(i<aideState?'done':(i===aideState?'todo':'wait'));
+  });
+}
+document.querySelectorAll('.astep').forEach(s=>s.onclick=()=>{
+  const i=+s.dataset.i;
+  if(i===aideState+1) aideState=i;
+  else if(i<aideState) aideState=i;
+  else if(i===aideState && i===4) aideState=5;
+  renderAide();
+});
+
+/* ===== Pop-up intégré ===== */
+function showPopup(opts){
+  const ICONS={red:'&#9888;',green:'&#10003;',blue:'&#63;'};
+  const p=document.getElementById('popup');
+  p.className='glass pop-'+(opts.tone||'blue');
+  document.getElementById('pIcon').innerHTML=ICONS[opts.tone||'blue'];
+  document.getElementById('pTitle').textContent=opts.title||'';
+  document.getElementById('pMsg').innerHTML=opts.msg||'';
+  const bt=document.getElementById('pBtns'); bt.innerHTML='';
+  (opts.buttons||[{label:'OK'}]).forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='sbtn '+(b.cls||'sbtn-blue');
+    btn.textContent=b.label;
+    btn.onclick=()=>{ hidePopup(); if(b.action) b.action(); };
+    bt.appendChild(btn);
+  });
+  document.getElementById('popov').style.display='block';
+  p.style.display='block';
+}
+function hidePopup(){ document.getElementById('popov').style.display='none'; document.getElementById('popup').style.display='none'; }
+
+/* ===== Réglages (modale) ===== */
+let nbModifs=0;
+function markDirty(){ nbModifs++; const s=document.getElementById('sstatus'); s.innerHTML='&#9888; '+nbModifs+' modification'+(nbModifs>1?'s':'')+' à exporter'; s.className='sstatus pending'; }
+function openSettings(){ document.getElementById('overlay').style.display='block'; document.getElementById('settings').style.display='block'; }
+function doCloseSettings(){ document.getElementById('overlay').style.display='none'; document.getElementById('settings').style.display='none'; }
+function tryCloseSettings(){
+  if(nbModifs>0){
+    showPopup({tone:'red',title:'Modifications non enregistrées',
+      msg:'Tu as <b>'+nbModifs+' modification'+(nbModifs>1?'s':'')+'</b> non exportée'+(nbModifs>1?'s':'')+'.<br/>Si tu fermes sans <b>Exporter data.js</b>, elles seront <b>perdues</b> au rechargement de la page.',
+      buttons:[
+        {label:'Rester et exporter',cls:'sbtn-blue'},
+        {label:'Fermer quand même',cls:'sbtn-red',action:doCloseSettings}
+      ]});
+    return;
+  }
+  doCloseSettings();
+}
+window.addEventListener('beforeunload',e=>{ if(nbModifs>0){ e.preventDefault(); e.returnValue=''; } });
+
+document.querySelectorAll('.stab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.spanel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById(t.dataset.p).classList.add('active');
+});
+
+function dot(c){ return '<span class="sdot" style="background:'+(ZCOLOR[c]||'#9aa0aa')+'"></span>'; }
+function badge(c){ return '<span class="badge" style="background:'+(ZCOLOR[c]||'#9aa0aa')+'">'+(CN[c]||c)+'</span>'; }
+function sattach(inpId,boxId,cb){
+  const inp=document.getElementById(inpId), box=document.getElementById(boxId);
+  inp.addEventListener('input',()=>{
+    const v=norm(inp.value); box.innerHTML='';
+    if(!v) return;
+    D.communes.filter(c=>norm(c.commune).startsWith(v)).slice(0,8).forEach(c=>{
+      const d=document.createElement('div'); d.innerHTML=dot(c.color)+c.commune;
+      d.onclick=()=>{ inp.value=c.commune; box.innerHTML=''; cb(c); };
+      box.appendChild(d);
+    });
+  });
+}
+
+let selC=null;
+sattach('ss1','ssg1',c=>{
+  selC=c;
+  document.getElementById('scur1').innerHTML='Zone actuelle : '+badge(c.color);
+  const sel=document.getElementById('ssel1'); sel.innerHTML='';
+  Object.keys(CN).forEach(col=>{ const o=document.createElement('option'); o.value=col; o.textContent=CN[col]; if(col===c.color)o.selected=true; sel.appendChild(o); });
+  document.getElementById('spick1').style.display='block';
+});
+document.getElementById('ssel1').addEventListener('change',function(){
+  if(!selC) return;
+  selC.color=this.value;
+  document.getElementById('scur1').innerHTML='Zone actuelle : '+badge(this.value);
+  markDirty(); recolorAll();
+});
+
+/* ===== Sélection par lot sur la carte ===== */
+const SELCOLOR='#c026d3';
+const sselZone=document.getElementById('sselZone');
+Object.keys(CN).forEach(col=>{ const o=document.createElement('option'); o.value=col; o.textContent=CN[col]; sselZone.appendChild(o); });
+
+document.getElementById('sbtnSelMode').onclick=()=>{
+  selTarget=sselZone.value;
+  selMode=true; selSet.clear();
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('settings').style.display='none';
+  closeInfo();
+  const bar=document.getElementById('selbar');
+  document.getElementById('selDot').style.borderColor=ZCOLOR[selTarget];
+  bar.style.display='flex';
+  updSelTxt();
+};
+function updSelTxt(){
+  const n=selSet.size;
+  document.getElementById('selTxt').textContent=n+' commune'+(n>1?'s':'')+' sélectionnée'+(n>1?'s':'')+' → '+CN[selTarget];
+}
+function toggleSelect(nom,layer){
+  const k=norm(nom);
+  if(selSet.has(k)){
+    selSet.delete(k);
+    const e=layerByName[k];
+    layer.setStyle(styleFor(e?e.z:'none'));
+  }else{
+    selSet.set(k,nom);
+    layer.setStyle({fillColor:SELCOLOR,fillOpacity:0.6,color:'#86198f',weight:2});
+  }
+  updSelTxt();
+}
+function endSelMode(){
+  selMode=false;
+  selSet.forEach((nom,k)=>{ const e=layerByName[k]; if(e) e.layer.setStyle(styleFor(e.z)); });
+  selSet.clear();
+  document.getElementById('selbar').style.display='none';
+}
+document.getElementById('selCancel').onclick=endSelMode;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&selMode) endSelMode(); });
+function applySelection(){
+  selSet.forEach((nom,k)=>{
+    let c=byName[k];
+    if(!c){
+      const e=layerByName[k];
+      const ctr=e?e.layer.getBounds().getCenter():{lat:0,lng:0};
+      c={commune:nom,lat:ctr.lat,lon:ctr.lng,color:selTarget};
+      D.communes.push(c); byName[k]=c;
+    }else{
+      c.color=selTarget;
+    }
+    markDirty();
+  });
+  const n=selSet.size;
+  selMode=false; selSet.clear();
+  document.getElementById('selbar').style.display='none';
+  recolorAll();
+  openSettings();
+  showPopup({tone:'green',title:'Zones mises à jour',
+    msg:n+' commune'+(n>1?'s':'')+' passée'+(n>1?'s':'')+' en zone <b>'+CN[selTarget]+'</b>.<br/>N\'oublie pas <b>Exporter data.js</b> puis le redépôt sur GitHub.',
+    buttons:[{label:'Continuer les réglages',cls:'sbtn-blue'}]});
+}
+document.getElementById('selApply').onclick=()=>{
+  const n=selSet.size;
+  if(!n){ showPopup({tone:'red',title:'Aucune commune sélectionnée',msg:'Clique sur les communes de la carte pour les sélectionner, puis Appliquer.',buttons:[{label:'OK',cls:'sbtn-blue'}]}); return; }
+  showPopup({tone:'blue',title:'Confirmer le changement',
+    msg:'Passer <b>'+n+' commune'+(n>1?'s':'')+'</b> en zone <b>'+CN[selTarget]+'</b> ?',
+    buttons:[
+      {label:'Annuler',cls:'sbtn-gray'},
+      {label:'Confirmer',cls:'sbtn-apply',action:applySelection}
+    ]});
+};
+
+const szsel=document.getElementById('szsel');
+Object.keys(CN).forEach(col=>{ const o=document.createElement('option'); o.value=col; o.textContent=CN[col]; szsel.appendChild(o); });
+function tintZoneSelect(){
+  const col=ZCOLOR[szsel.value]||'#9aa0aa';
+  szsel.style.background=hexA(col,0.18);
+  szsel.style.borderColor=hexA(col,0.55);
+  szsel.style.color=darken(col);
+  szsel.style.fontWeight='600';
+}
+function renderZone(){
+  tintZoneSelect();
+  const col=szsel.value, tb=document.getElementById('sztb'); tb.innerHTML='';
+  D.labels.forEach((lab,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+lab+'</td><td style="text-align:right;"><input type="text" value="'+D.grilles[col][i]+'" data-i="'+i+'"></td>';
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',function(){ D.grilles[col][this.dataset.i]=this.value; markDirty(); }));
+}
+szsel.addEventListener('change',renderZone); renderZone();
+
+sattach('ss3','ssg3',c=>{
+  const ed=document.getElementById('sed3');
+  const base=D.exceptions[c.commune]?D.exceptions[c.commune].slice():D.grilles[c.color].slice();
+  let h='<div style="margin-bottom:10px; font-size:14px; color:var(--txt);">'+c.commune+' '+badge(c.color)+(D.exceptions[c.commune]?' <span style="color:#1e50b0;font-weight:500;">(exception active)</span>':'')+'</div>';
+  D.labels.forEach((lab,i)=>{ h+='<div class="exc-row"><span class="l">'+lab+'</span><input type="text" data-i="'+i+'" value="'+base[i]+'"></div>'; });
+  h+='<div style="margin-top:12px; display:flex; gap:9px;"><button class="sbtn sbtn-blue" id="seAp">Définir l\'exception</button><button class="sbtn sbtn-gray" id="seCl">Supprimer</button></div>';
+  ed.innerHTML=h; ed.style.display='block';
+  document.getElementById('seAp').onclick=()=>{ D.exceptions[c.commune]=[...ed.querySelectorAll('input')].map(x=>x.value); markDirty(); showPopup({tone:'green',title:'Exception définie',msg:'<b>'+c.commune+'</b> a maintenant ses tarifs spécifiques.',buttons:[{label:'Continuer les réglages',cls:'sbtn-blue'}]}); };
+  document.getElementById('seCl').onclick=()=>{ delete D.exceptions[c.commune]; markDirty(); ed.style.display='none'; document.getElementById('ss3').value=''; showPopup({tone:'green',title:'Exception supprimée',msg:'<b>'+c.commune+'</b> reprend le tarif de sa zone.',buttons:[{label:'Continuer les réglages',cls:'sbtn-blue'}]}); };
+});
+
+document.getElementById('sbtnExport').onclick=()=>{
+  const js='// Données DGF 78 — généré automatiquement\n'+
+    '// labels: intitulés des 8 tarifs | grilles: prix par couleur | communes: liste avec couleur + code postal | exceptions: surcharge par commune\n'+
+    'var DGF_DATA = '+JSON.stringify(D,null,2)+';\n';
+  const blob=new Blob([js],{type:'text/javascript'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='data.js'; a.click();
+  nbModifs=0;
+  const s=document.getElementById('sstatus'); s.innerHTML='&#10003; Exporté — redépose data.js sur GitHub'; s.className='sstatus ok';
+  showPopup({tone:'green',title:'Bien enregistré',
+    msg:'Le fichier <b>data.js</b> a été téléchargé.<br/>1. Consulte tes <b>téléchargements</b><br/>2. Redépose <b>data.js</b> sur <b>GitHub</b> pour mettre en ligne',
+    buttons:[
+      {label:'Ouvrir GitHub',cls:'sbtn-apply',action:()=>window.open('https://github.com/jeremythomasdgf78/carte-appels','_blank')},
+      {label:'OK',cls:'sbtn-blue'}
+    ]});
+};
+</script>
+</body>
+</html>

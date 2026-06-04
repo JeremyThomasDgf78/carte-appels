@@ -308,9 +308,10 @@
     </div>
     <div class="astep" data-i="2">
       <span class="anum">3</span>
-      <div class="atit">Annoncer une intervention possible rapidement</div>
+      <div class="atit">Annoncer la possibilité d'une intervention rapide</div>
       <div class="adet">
-        <p>Demander au client s'il est <b>facilement disponible</b> pour intervenir au plus vite.</p>
+        <p>Dire au client qu'on est <b>pas mal sollicités</b>, mais qu'on va lui trouver un <b>créneau rapidement</b>.</p>
+        <p>Lui demander s'il est <b>facilement disponible</b> pour qu'on intervienne chez lui.</p>
         <p><b>Ne pas encore consulter le planning.</b></p>
       </div>
     </div>
@@ -591,7 +592,7 @@ searchEl.addEventListener('input',function(){
   res.forEach(c=>{
     const d=document.createElement('div'); d.className='suggestion';
     d.innerHTML='<span class="sdot" style="background:'+ZCOLOR[c.color]+'"></span>'+c.commune;
-    d.onclick=()=>{ gotoCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; };
+    d.onclick=()=>{ gotoCommune(c); suggBox.style.display='none'; searchEl.value=''; searchEl.blur(); };
     suggBox.appendChild(d);
   });
   suggBox.style.display='block';
@@ -600,7 +601,7 @@ searchEl.addEventListener('keydown',function(e){
   if(e.key==='Enter'){
     const val=norm(this.value);
     const c=D.communes.find(x=>norm(x.commune)===val)||D.communes.find(x=>norm(x.commune).startsWith(val));
-    if(c){ gotoCommune(c); suggBox.style.display='none'; searchEl.value=c.commune; }
+    if(c){ gotoCommune(c); suggBox.style.display='none'; searchEl.value=''; searchEl.blur(); }
   }
 });
 document.addEventListener('click',e=>{ if(!document.getElementById('topbar').contains(e.target)) suggBox.style.display='none'; });

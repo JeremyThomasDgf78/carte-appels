@@ -29,8 +29,8 @@
   #searchWrap .ic{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--txt-mute); font-size:17px; font-style:normal; pointer-events:none; }
   #search{ width:100%; padding:12px 15px 12px 42px; border-radius:15px; border:none; outline:none; font-size:16px; color:var(--txt); background:transparent; }
   #search::placeholder{ color:var(--txt-mute); }
-  #reglages-btn{ flex-shrink:0; display:flex; align-items:center; gap:7px; padding:0 16px; border-radius:15px; color:#fff; font-size:14.5px; font-weight:700; font-family:inherit; cursor:pointer; background:#dc2626; border:none; box-shadow:0 8px 32px rgba(0,0,0,0.2); }
-  #reglages-btn:hover{ background:#b91c1c; }
+  #reglages-btn{ flex-shrink:0; display:flex; align-items:center; gap:7px; padding:0 16px; border-radius:15px; color:#dc2626; font-size:14.5px; font-weight:700; font-family:inherit; cursor:pointer; background:#ffffff; border:2px solid #1a1d23; box-shadow:0 8px 32px rgba(0,0,0,0.2); }
+  #reglages-btn:hover{ background:#f4f4f5; }
   #suggestions{ position:absolute; top:60px; left:0; right:0; border-radius:15px; overflow:hidden; z-index:1001; max-height:44vh; overflow-y:auto; display:none; }
   .suggestion{ padding:12px 15px; cursor:pointer; font-size:15px; color:var(--txt-soft); display:flex; align-items:center; gap:10px; border-bottom:0.5px solid var(--bd-soft); }
   .suggestion:hover{ background:rgba(0,0,0,0.05); color:var(--txt); }
@@ -56,7 +56,9 @@
   #info .icontent .catbloc{ margin:0 14px; }
   #info .icontent .hors-big{ margin:0 18px; }
   #info .ihead{ padding:12px 18px 10px; border-bottom:0.5px solid var(--bd-soft); position:relative; display:flex; align-items:center; gap:10px; }
-  #info .ititle{ color:var(--txt); font-size:21px; font-weight:700; letter-spacing:-0.2px; white-space:nowrap; overflow:hidden; flex:1; }
+  #info .ititle{ color:var(--txt); font-size:19px; font-weight:700; letter-spacing:-0.2px; white-space:nowrap; overflow:hidden; flex:1; }
+  .iroute{ flex-shrink:0; font-size:12.5px; font-weight:700; color:var(--txt-soft); background:rgba(0,0,0,0.06); border-radius:12px; padding:5px 11px; white-space:nowrap; }
+  .iroute:empty{ display:none; }
   #info .iclose{ flex-shrink:0; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.55); border:none; color:#fff; font-size:15px; font-weight:700; cursor:pointer; line-height:1; }
   #info .iclose:hover{ background:rgba(0,0,0,0.75); }
   .zbadge{ flex-shrink:0; display:inline-flex; align-items:center; font-size:13px; font-weight:700; padding:5px 14px; border-radius:14px; color:#fff; }
@@ -103,6 +105,7 @@
   .eyeic{ flex-shrink:0; }
 
   .pin svg{ display:block; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.35)); }
+  .basepin svg{ display:block; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
 
   /* ===== Modale réglages ===== */
   #overlay{ display:none; position:absolute; inset:0; z-index:2000; background:rgba(15,18,24,0.35); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
@@ -235,10 +238,12 @@
 <div id="legend" class="glass">
   <div class="lt">Communes par zone</div>
   <div class="lrow" data-z="verte"><span class="ld" style="background:#28a745"></span>Verte<span class="cnt" id="c-verte"></span></div>
+  <div class="lrow" data-z="jaune"><span class="ld" style="background:#ffc107"></span>Jaune<span class="cnt" id="c-jaune"></span></div>
   <div class="lrow" data-z="orange"><span class="ld" style="background:#fd7e14"></span>Orange<span class="cnt" id="c-orange"></span></div>
-  <div class="lrow" data-z="bleue"><span class="ld" style="background:#007bff"></span>Bleu (hors dépt)<span class="cnt" id="c-bleue"></span></div>
-  <div class="lrow" data-z="rouge"><span class="ld" style="background:#dc3545"></span>Rouge (hors secteur)<span class="cnt" id="c-rouge"></span></div>
-  <div class="lrow" data-z="none"><span class="ld" style="background:#9aa0aa"></span>Non classée<span class="cnt" id="c-none"></span></div>
+  <div class="lrow" data-z="orangefonce"><span class="ld" style="background:#e03e1f"></span>Orange foncé<span class="cnt" id="c-orangefonce"></span></div>
+  <div class="lrow" data-z="bleue"><span class="ld" style="background:#007bff"></span>Bleu<span class="cnt" id="c-bleue"></span></div>
+  <div class="lrow" data-z="rouge"><span class="ld" style="background:#8a8f98"></span>Grise (hors secteur)<span class="cnt" id="c-rouge"></span></div>
+  <div class="lrow" data-z="none"><span class="ld" style="background:#c4c8cf"></span>Non classée<span class="cnt" id="c-none"></span></div>
   <div class="ltotal">Total<span class="cnt" id="c-total"></span></div>
 </div>
 
@@ -247,6 +252,7 @@
 <div id="info" class="glass">
   <div class="ihead">
     <div class="ititle" id="iTitle"></div>
+    <span class="iroute" id="iRoute"></span>
     <span class="zbadge" id="iBadge"></span>
     <button class="iclose" onclick="closeInfo()">&#10005;</button>
   </div>
@@ -405,9 +411,9 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="data.js"></script>
 <script>
-const ZCOLOR={verte:'#28a745',orange:'#fd7e14',rouge:'#dc3545',bleue:'#007bff',none:'#9aa0aa'};
-const ZNAME={verte:'Verte',orange:'Orange',rouge:'Rouge — hors secteur',bleue:'Bleu — hors département',none:'Non classée'};
-const CN={verte:'Verte',orange:'Orange',bleue:'Bleu (hors dépt)',rouge:'Rouge (hors secteur)'};
+const ZCOLOR={verte:'#28a745',jaune:'#ffc107',orange:'#fd7e14',orangefonce:'#e03e1f',rouge:'#8a8f98',bleue:'#007bff',none:'#c4c8cf'};
+const ZNAME={verte:'Verte',jaune:'Jaune',orange:'Orange',orangefonce:'Orange foncé',rouge:'Grise — hors secteur',bleue:'Bleu — hors département',none:'Non classée'};
+const CN={verte:'Verte',jaune:'Jaune',orange:'Orange',orangefonce:'Orange foncé',bleue:'Bleu (hors dépt)',rouge:'Grise (hors secteur)'};
 const communesCCHVC=["Chevreuse","Choisel","Dampierre-En-Yvelines","Le Mesnil-Saint-Denis","Lévis-Saint-Nom","Milon-La-Chapelle","Saint-Forget","Saint-Lambert-Des-Bois","Saint-Rémy-Lès-Chevreuse","Senlisse"];
 
 /* D = données de travail (modifiables et exportables) */
@@ -417,6 +423,17 @@ function norm(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-'�
 const byName={}; D.communes.forEach(c=>byName[norm(c.commune)]=c);
 
 var map=L.map('map',{zoomControl:false}).setView([48.80,1.95],10);
+
+/* Épingle base DGF 78 — 31 bis rue de Coignières, Maurepas */
+const baseIcon=L.divIcon({className:'basepin',html:
+'<svg width="30" height="37" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg">'+
+'<path d="M17 0C8 0 1.5 6.5 1.5 15.2C1.5 26 17 42 17 42S32.5 26 32.5 15.2C32.5 6.5 26 0 17 0z" fill="#111827" stroke="#fff" stroke-width="1.5"/>'+
+'<path d="M9.5 14.5 L17 8.5 L24.5 14.5 V22 H9.5 Z" fill="#fff"/>'+
+'<rect x="14.6" y="16.5" width="4.8" height="5.5" fill="#111827"/>'+
+'</svg>',iconSize:[30,37],iconAnchor:[15,37]});
+L.marker([48.766094,1.91812],{icon:baseIcon,zIndexOffset:2000}).addTo(map)
+ .bindTooltip('Base DGF 78 — Maurepas',{direction:'top',className:'commune-tt'});
+
 var homeBounds=null;
 function goHome(){ if(homeBounds) map.fitBounds(homeBounds,{padding:[20,20],animate:true}); else map.setView([48.80,1.95],10,{animate:true}); }
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ attribution:'© OpenStreetMap contributors', maxZoom:19 }).addTo(map);
@@ -430,9 +447,9 @@ var pinMarker=null;
 function setPin(latlng){ if(pinMarker) map.removeLayer(pinMarker); pinMarker=L.marker(latlng,{icon:makePin(),interactive:false}).addTo(map); }
 
 const FILL_OPACITY=0.40;
-const counts={verte:0,orange:0,rouge:0,bleue:0,none:0};
+const counts={verte:0,jaune:0,orange:0,orangefonce:0,rouge:0,bleue:0,none:0};
 const hidden={};
-let layersByZone={verte:[],orange:[],rouge:[],bleue:[],none:[]};
+let layersByZone={verte:[],jaune:[],orange:[],orangefonce:[],rouge:[],bleue:[],none:[]};
 const layerByName={};
 
 function zoneOf(nom){ const c=byName[norm(nom)]; return c?c.color:'none'; }
@@ -444,8 +461,11 @@ function addFeatures(geo){
     onEachFeature:(f,layer)=>{
       const nom=f.properties.nom;
       const z=zoneOf(nom);
-      counts[z]++; (layersByZone[z]||layersByZone.none).push(layer); layerByName[norm(nom)]={layer,z};
-      layer.bindTooltip(nom,{sticky:true,direction:'top',className:'commune-tt',opacity:1});
+      counts[z]++; (layersByZone[z]||layersByZone.none).push(layer); layerByName[norm(nom)]={layer,z,nom};
+      layer.bindTooltip(()=>{
+        const r=routeCache[norm(nom)];
+        return '<b>'+nom+'</b>'+(r?'<br/>'+r+' de route':'');
+      },{sticky:true,direction:'top',className:'commune-tt',opacity:1});
       layer.on('click',()=>{
         if(selMode){ toggleSelect(nom,layer); return; }
         highlight(layer);
@@ -467,7 +487,7 @@ function recolorAll(){
   Object.keys(counts).forEach(z=>counts[z]=0);
   Object.keys(layerByName).forEach(k=>{
     const e=layerByName[k];
-    const z=zoneOf(e.layer.getTooltip().getContent());
+    const z=zoneOf(e.nom);
     e.z=z; counts[z]++; layersByZone[z].push(e.layer);
     e.layer.setStyle(styleFor(z));
     if(hidden[z]) e.layer.setStyle({fillOpacity:0,opacity:0});
@@ -476,7 +496,7 @@ function recolorAll(){
 }
 function refreshLegend(){
   let total=0;
-  ['verte','orange','rouge','bleue','none'].forEach(z=>{
+  ['verte','jaune','orange','orangefonce','rouge','bleue','none'].forEach(z=>{
     total+=counts[z];
     document.getElementById('c-'+z).textContent=counts[z]?counts[z]+' commune'+(counts[z]>1?'s':''):'';
   });
@@ -508,9 +528,40 @@ function hexA(hex,a){ const n=parseInt(hex.slice(1),16); return 'rgba('+(n>>16)+
 function darken(hex){ const n=parseInt(hex.slice(1),16); let r=(n>>16),g=(n>>8)&255,b=n&255; return 'rgb('+Math.round(r*0.55)+','+Math.round(g*0.55)+','+Math.round(b*0.55)+')'; }
 
 function fitTitle(el){
-  el.style.fontSize='22px';
-  let fs=22;
-  while(el.scrollWidth>el.clientWidth && fs>13){ fs-=0.5; el.style.fontSize=fs+'px'; }
+  el.style.fontSize='19px';
+  let fs=19;
+  while(el.scrollWidth>el.clientWidth && fs>12){ fs-=0.5; el.style.fontSize=fs+'px'; }
+}
+
+/* Distances routières depuis la base (OSRM) — précalcul global + secours unitaire */
+const BASE_LL=[48.766094,1.91812];
+const routeCache={};
+function routeTxt(km,min){ return km.toFixed(1).replace('.',',')+' km · '+Math.round(min)+' min'; }
+function loadAllRoutes(){
+  const cs=D.communes, lots=[];
+  for(let i=0;i<cs.length;i+=90) lots.push(cs.slice(i,i+90));
+  lots.forEach(lot=>{
+    const url='https://router.project-osrm.org/table/v1/driving/'+BASE_LL[1]+','+BASE_LL[0]+';'+lot.map(c=>c.lon.toFixed(5)+','+c.lat.toFixed(5)).join(';')+'?sources=0&annotations=distance,duration';
+    fetch(url).then(r=>r.json()).then(j=>{
+      if(j.code!=='Ok') return;
+      lot.forEach((c,i)=>{ routeCache[norm(c.commune)]=routeTxt(j.distances[0][i+1]/1000,j.durations[0][i+1]/60); });
+    }).catch(()=>{});
+  });
+}
+loadAllRoutes();
+function showRoute(c){
+  const el=document.getElementById('iRoute');
+  const k=norm(c.commune);
+  if(routeCache[k]){ el.textContent=routeCache[k]; return; }
+  el.textContent='…';
+  fetch('https://router.project-osrm.org/route/v1/driving/'+BASE_LL[1]+','+BASE_LL[0]+';'+c.lon+','+c.lat+'?overview=false')
+    .then(r=>r.json())
+    .then(j=>{
+      if(j.code!=='Ok'||!j.routes||!j.routes[0]) throw 0;
+      routeCache[k]=routeTxt(j.routes[0].distance/1000,j.routes[0].duration/60);
+      if(norm(document.getElementById('iTitle').textContent.split(' — ')[0])===k) el.textContent=routeCache[k];
+    })
+    .catch(()=>{ el.textContent=''; });
 }
 const EYE_OPEN='<svg class="eyeic" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#444441" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF='<svg class="eyeic" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3C3489" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-2.2 3.2M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7c1.8 0 3.4-.5 4.8-1.2M9.9 9.9a3 3 0 0 0 4.2 4.2"/><line x1="3" y1="3" x2="21" y2="21"/></svg>';
@@ -532,6 +583,7 @@ function openInfo(c){
   const col=ZCOLOR[c.color];
   const titleEl=document.getElementById('iTitle');
   titleEl.textContent=c.commune+(c.cp?' — '+c.cp:'');
+  showRoute(c);
   const badge=document.getElementById('iBadge');
   badge.style.background=col;
   badge.textContent='Zone '+ZNAME[c.color].split(' —')[0].toLowerCase();
@@ -542,16 +594,16 @@ function openInfo(c){
   let b='';
   if(isHors){ b='<div class="hors-big">&#9888; Hors secteur d\'intervention</div>'; }
   else{
-    b+='<div class="catbloc vis"><div class="ct">'+EYE_OPEN+'Nid visible</div>';
-    b+='<div class="tline"><span class="lab">Accessible (≤ 3 m)</span><span class="price">'+p[0]+'</span></div>';
-    b+='<div class="seclbl">En hauteur (arbre ou autre)</div><div class="arbres">';
+    b+='<div class="catbloc vis"><div class="ct">Nid en extérieur</div>';
+    b+='<div class="tline"><span class="lab">Nid visible ou en terre / objet (&lt; 3 m)</span><span class="price">'+p[0]+'</span></div>';
+    b+='<div class="seclbl">En hauteur dans un arbre</div><div class="arbres">';
     const h=['3–10 m','10–15 m','15–20 m','20–30 m'];
     h.forEach((lbl,i)=>{ b+='<div class="acard"><div class="h">'+lbl+'</div><div class="p">'+p[1+i]+'</div></div>'; });
     b+='</div></div>';
-    b+='<div class="catbloc nvis"><div class="ct">'+EYE_OFF+'Nid non visible</div>';
-    b+='<div class="tline"><span class="lab">≤ 3 m · terre / toiture / volet roulant</span><span class="price">'+p[5]+'</span></div>';
+    b+='<div class="catbloc nvis"><div class="ct">Nid en structure — non visible</div>';
+    b+='<div class="tline"><span class="lab">Sous toiture 3 m max / coffret volet roulant</span><span class="price">'+p[5]+'</span></div>';
     b+='<div class="tline"><span class="lab">Sous toiture</span><span class="price">'+p[6]+'</span></div>';
-    b+='<div class="tline"><span class="lab">Cheminée (abeilles ou frelons)</span><span class="price">'+p[7]+'</span></div>';
+    b+='<div class="tline"><span class="lab">En cheminée (abeilles ou frelons)</span><span class="price">'+p[7]+'</span></div>';
     b+='</div>';
     b+='<div class="catbloc multi"><div class="ct"><span class="eyeic" style="font-size:17px;">&#10133;</span>Plusieurs nids</div>';
     b+='<div class="tline"><span class="lab">Tarif du nid le plus cher</span><span class="price">+ 50 € / nid supplémentaire</span></div>';
@@ -569,6 +621,7 @@ document.getElementById('iTtc').addEventListener('input',function(){
 function openInfoUnclassified(nom){
   const titleEl=document.getElementById('iTitle');
   titleEl.textContent=nom;
+  document.getElementById('iRoute').textContent='';
   const badge=document.getElementById('iBadge');
   badge.style.background='#9aa0aa'; badge.textContent='Non classée';
   document.getElementById('iMeta').innerHTML='';

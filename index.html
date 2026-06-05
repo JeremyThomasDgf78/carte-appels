@@ -646,6 +646,18 @@ function closeInfo(){
 }
 
 const searchEl=document.getElementById('search'), suggBox=document.getElementById('suggestions');
+/* Focus auto au chargement + capture de la frappe clavier globale vers la recherche */
+window.addEventListener('load',()=>searchEl.focus());
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  if(e.key.length!==1) return; // lettres/chiffres uniquement
+  const t=document.activeElement;
+  if(t && (t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA')) return;
+  if(selMode) return;
+  if(document.getElementById('settings').style.display==='block') return;
+  if(document.getElementById('popup').style.display==='block') return;
+  searchEl.focus();
+});
 searchEl.addEventListener('input',function(){
   const val=norm(this.value); suggBox.innerHTML='';
   if(!val){ suggBox.style.display='none'; return; }

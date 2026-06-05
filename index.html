@@ -64,6 +64,11 @@
   .zbadge{ flex-shrink:0; display:inline-flex; align-items:center; font-size:13px; font-weight:700; padding:5px 14px; border-radius:14px; color:#fff; }
   .subv{ display:block; padding:6px 18px 0; font-size:13px; color:#1c7a3d; font-weight:700; }
   .bmention{ display:block; padding:4px 18px 0; font-size:13px; color:#1e63c9; font-weight:500; }
+  .qwarn{ display:block; margin:6px 18px 0; background:#FFF7DB; border:1px solid #F0C93C; border-radius:10px; padding:6px 12px; font-size:12.5px; font-weight:700; color:#7A5A00; line-height:1.4; }
+  #info.compact .icontent{ gap:8px; padding:8px 0; }
+  #info.compact .catbloc{ padding:6px 13px; }
+  #info.compact .iblocpro{ padding:8px 14px; }
+  #info.compact .ibtns{ padding-bottom:9px; }
   .catbloc{ border-radius:12px; padding:8px 13px; margin-bottom:12px; border:0.5px solid; }
   .catbloc.vis{ background:#F1EFE8; border-color:#D3D1C7; }
   .catbloc.nvis{ background:#EEEDFE; border-color:#CECBF6; }
@@ -82,7 +87,7 @@
   .catbloc .tline .price{ font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .catbloc.vis .price{ color:#2C2C2A; } .catbloc.nvis .price{ color:#26215C; }
   .catbloc .seclbl{ font-size:14.5px; font-weight:400; margin:6px 0 5px; color:#5F5E5A; }
-  .arbres{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:2px; }
+  .arbres{ display:grid; grid-template-columns:1fr 1fr 1.35fr 1fr; gap:6px; margin-bottom:2px; }
   .acard{ background:rgba(255,255,255,0.85); border:0.5px solid #D3D1C7; border-radius:10px; padding:6px 3px; text-align:center; }
   .acard .h{ color:#5F5E5A; font-size:12.5px; white-space:nowrap; }
   .acard .p{ color:#2C2C2A; font-size:16px; font-weight:700; margin-top:1px; }
@@ -576,7 +581,7 @@ function centerOn(latlng,zoomTo){
   map.setView(map.unproject(pt,z),z,{animate:true});
 }
 
-/* tarifs : indices 0=visible ≤3m, 1-4=hauteur, 5=non visible ≤3m, 6=sous toiture, 7=cheminée */
+/* tarifs : indices 0=visible ≤3m, 1-4=hauteur (3-6, 6-10, 10-20, 20-30), 5=non visible ≤3m, 6=sous toiture, 7=cheminée */
 function openInfo(c){
   const p=D.exceptions[c.commune]?D.exceptions[c.commune]:D.grilles[c.color];
   const isHors=String(p[0]).toLowerCase().includes('hors secteur');
@@ -590,14 +595,17 @@ function openInfo(c){
   let meta='';
   if(c.color==='bleue') meta+='<span class="bmention">Hors département — intervention possible</span>';
   if(communesCCHVC.map(x=>x.toLowerCase()).includes(c.commune.toLowerCase())) meta+='<span class="subv">&#10003; Subvention CCHVC frelon asiatique</span>';
+  const isElancourt=norm(c.commune)===norm('Élancourt');
+  if(isElancourt) meta+='<span class="qwarn">&#9888; Si quartier Clef Saint-Pierre : appliquer la tarification JAUNE</span>';
+  document.getElementById('info').classList.toggle('compact',isElancourt);
   document.getElementById('iMeta').innerHTML=meta;
   let b='';
   if(isHors){ b='<div class="hors-big">&#9888; Hors secteur d\'intervention</div>'; }
   else{
     b+='<div class="catbloc vis"><div class="ct">Nid en extérieur</div>';
     b+='<div class="tline"><span class="lab">Nid visible ou en terre / objet (&lt; 3 m)</span><span class="price">'+p[0]+'</span></div>';
-    b+='<div class="seclbl">En hauteur dans un arbre</div><div class="arbres">';
-    const h=['3–10 m','10–15 m','15–20 m','20–30 m'];
+    b+='<div class="seclbl">Nid visible en hauteur ou dans un arbre</div><div class="arbres">';
+    const h=['3–6 m','6–10 m','10–20 m','20–30 m'];
     h.forEach((lbl,i)=>{ b+='<div class="acard"><div class="h">'+lbl+'</div><div class="p">'+p[1+i]+'</div></div>'; });
     b+='</div></div>';
     b+='<div class="catbloc nvis"><div class="ct">Nid en structure — non visible</div>';
@@ -619,6 +627,7 @@ document.getElementById('iTtc').addEventListener('input',function(){
   document.getElementById('iHt').textContent=isNaN(v)?'— €':(v/1.2).toFixed(2).replace('.',',')+' €';
 });
 function openInfoUnclassified(nom){
+  document.getElementById('info').classList.remove('compact');
   const titleEl=document.getElementById('iTitle');
   titleEl.textContent=nom;
   document.getElementById('iRoute').textContent='';

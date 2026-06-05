@@ -3,9 +3,9 @@
 var DGF_DATA = {
   "labels": [
     "Nid visible ou en terre / objet (< 3 m)",
-    "Nid en hauteur dans un arbre : 3 à 10 m",
-    "Nid en hauteur dans un arbre : 10 à 15 m",
-    "Nid en hauteur dans un arbre : 15 à 20 m",
+    "Nid en hauteur dans un arbre : 3 à 6 m",
+    "Nid en hauteur dans un arbre : 6 à 10 m",
+    "Nid en hauteur dans un arbre : 10 à 20 m",
     "Nid en hauteur dans un arbre : 20 à 30 m",
     "Nid sous toiture 3 m max / coffret volet roulant",
     "Nid sous toiture",
@@ -15,52 +15,52 @@ var DGF_DATA = {
     "verte": [
       "118 €",
       "148 €",
-      "178 €",
-      "198 €",
-      "218 €",
+      "158 €",
+      "168 - 198 €",
+      "208 €",
       "138 €",
-      "148 - 168 €",
+      "158 €",
       "178 €"
     ],
     "jaune": [
       "128 €",
       "158 €",
-      "188 €",
-      "208 €",
-      "228 €",
+      "168 €",
+      "178 - 208 €",
+      "218 €",
       "148 €",
-      "158 - 178 €",
+      "168 €",
       "188 €"
     ],
     "orange": [
       "138 €",
       "168 €",
-      "198 €",
-      "218 €",
-      "238 €",
+      "178 €",
+      "188 - 218 €",
+      "228 €",
       "158 €",
-      "168 - 188 €",
-      "198 €"
+      "178 €",
+      "188 €"
     ],
     "orangefonce": [
       "148 €",
       "178 €",
-      "208 €",
-      "228 €",
-      "248 €",
+      "178 €",
+      "188 - 218 €",
+      "238 €",
       "158 €",
       "188 €",
       "198 €"
     ],
     "bleue": [
-      "158 €",
+      "168 €",
       "188 €",
-      "218 €",
-      "238 €",
-      "258 €",
-      "178 €",
-      "188 - 208 €",
-      "218 €"
+      "208 €",
+      "228 - 248 €",
+      "278 €",
+      "188 €",
+      "208 €",
+      "248 €"
     ],
     "rouge": [
       "! Hors secteur d'intervention !",
@@ -323,7 +323,7 @@ var DGF_DATA = {
       "commune": "Bourdonné",
       "lat": 48.75449432,
       "lon": 1.653230209,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78113"
     },
     {
@@ -407,7 +407,7 @@ var DGF_DATA = {
       "commune": "Chapet",
       "lat": 48.96830879,
       "lon": 1.938956807,
-      "color": "rouge",
+      "color": "orangefonce",
       "cp": "78130"
     },
     {
@@ -442,7 +442,7 @@ var DGF_DATA = {
       "commune": "Chaville",
       "lat": 48.8073,
       "lon": 2.1903,
-      "color": "bleue",
+      "color": "orangefonce",
       "cp": "92370"
     },
     {
@@ -540,7 +540,7 @@ var DGF_DATA = {
       "commune": "Dannemarie",
       "lat": 48.76412619,
       "lon": 1.608102221,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78550"
     },
     {
@@ -834,7 +834,7 @@ var DGF_DATA = {
       "commune": "Houdan",
       "lat": 48.79813064,
       "lon": 1.596685264,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78550"
     },
     {
@@ -1205,7 +1205,7 @@ var DGF_DATA = {
       "commune": "Marnes-la-Coquette",
       "lat": 48.8347,
       "lon": 2.175,
-      "color": "bleue",
+      "color": "orangefonce",
       "cp": "92430"
     },
     {
@@ -1219,7 +1219,7 @@ var DGF_DATA = {
       "commune": "Maulette",
       "lat": 48.78349151,
       "lon": 1.615913848,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78550"
     },
     {
@@ -1443,7 +1443,7 @@ var DGF_DATA = {
       "commune": "Orcemont",
       "lat": 48.59716886,
       "lon": 1.809614202,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78125"
     },
     {
@@ -1464,7 +1464,7 @@ var DGF_DATA = {
       "commune": "Orphin",
       "lat": 48.57645772,
       "lon": 1.783195359,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78125"
     },
     {
@@ -1583,7 +1583,7 @@ var DGF_DATA = {
       "commune": "Rochefort-En-Yvelines",
       "lat": 48.59207976,
       "lon": 1.979454598,
-      "color": "rouge",
+      "color": "orangefonce",
       "cp": "78730"
     },
     {
@@ -1793,7 +1793,7 @@ var DGF_DATA = {
       "commune": "Sonchamp",
       "lat": 48.58809418,
       "lon": 1.868745683,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78120"
     },
     {
@@ -1870,21 +1870,21 @@ var DGF_DATA = {
       "commune": "Vélizy-Villacoublay",
       "lat": 48.783874,
       "lon": 2.197389882,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78140"
     },
     {
       "commune": "Verneuil-Sur-Seine",
       "lat": 48.98697942,
       "lon": 1.962957365,
-      "color": "rouge",
+      "color": "orangefonce",
       "cp": "78480"
     },
     {
       "commune": "Vernouillet",
       "lat": 48.9651003,
       "lon": 1.974572079,
-      "color": "rouge",
+      "color": "orangefonce",
       "cp": "78540"
     },
     {
@@ -1968,7 +1968,7 @@ var DGF_DATA = {
       "commune": "Viroflay",
       "lat": 48.80269591,
       "lon": 2.171320679,
-      "color": "orange",
+      "color": "orangefonce",
       "cp": "78220"
     },
     {

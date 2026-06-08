@@ -13,16 +13,6 @@ var DGF_DATA = {
   ],
   "grilles": {
     "verte": [
-      "118 €",
-      "148 €",
-      "158 €",
-      "168 - 198 €",
-      "208 €",
-      "138 €",
-      "158 €",
-      "178 €"
-    ],
-    "jaune": [
       "128 €",
       "158 €",
       "168 €",
@@ -32,7 +22,7 @@ var DGF_DATA = {
       "168 €",
       "188 €"
     ],
-    "orange": [
+    "jaune": [
       "138 €",
       "168 €",
       "178 €",
@@ -42,7 +32,7 @@ var DGF_DATA = {
       "178 €",
       "188 €"
     ],
-    "orangefonce": [
+    "orange": [
       "148 €",
       "178 €",
       "178 €",
@@ -78,7 +68,7 @@ var DGF_DATA = {
       "commune": "Ablis",
       "lat": 48.52846319,
       "lon": 1.850858887,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78660"
     },
     {
@@ -92,14 +82,14 @@ var DGF_DATA = {
       "commune": "Adainville",
       "lat": 48.72032223,
       "lon": 1.662452644,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78113"
     },
     {
       "commune": "Aigremont",
       "lat": 48.90091136,
       "lon": 2.016315301,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78240"
     },
     {
@@ -113,7 +103,7 @@ var DGF_DATA = {
       "commune": "Andelu",
       "lat": 48.88775093,
       "lon": 1.810612795,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78770"
     },
     {
@@ -127,21 +117,21 @@ var DGF_DATA = {
       "commune": "Arnouville-Lès-Mantes",
       "lat": 48.9109751,
       "lon": 1.720242546,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78790"
     },
     {
       "commune": "Aubergenville",
       "lat": 48.96272252,
       "lon": 1.849561087,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78410"
     },
     {
       "commune": "Auffargis",
       "lat": 48.68417258,
       "lon": 1.902908162,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78610"
     },
     {
@@ -155,56 +145,56 @@ var DGF_DATA = {
       "commune": "Aulnay-Sur-Mauldre",
       "lat": 48.92831977,
       "lon": 1.840812545,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78126"
     },
     {
       "commune": "Auteuil",
       "lat": 48.83959261,
       "lon": 1.819681825,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78770"
     },
     {
       "commune": "Autouillet",
       "lat": 48.84408854,
       "lon": 1.797003432,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78770"
     },
     {
       "commune": "Bailly",
       "lat": 48.83690897,
       "lon": 2.080545724,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78870"
     },
     {
       "commune": "Bazainville",
       "lat": 48.80695546,
       "lon": 1.667006113,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78550"
     },
     {
       "commune": "Bazemont",
       "lat": 48.93189273,
       "lon": 1.873890803,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78580"
     },
     {
       "commune": "Bazoches-Sur-Guyonne",
       "lat": 48.7736578,
       "lon": 1.851783608,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
       "commune": "Béhoust",
       "lat": 48.83226397,
       "lon": 1.724584615,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78910"
     },
     {
@@ -218,14 +208,14 @@ var DGF_DATA = {
       "commune": "Beynes",
       "lat": 48.85452857,
       "lon": 1.869761725,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78650"
     },
     {
       "commune": "Bièvres",
       "lat": 48.7551,
       "lon": 2.2254,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "91570"
     },
     {
@@ -239,7 +229,7 @@ var DGF_DATA = {
       "commune": "Boinville-En-Mantois",
       "lat": 48.92823134,
       "lon": 1.748767298,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78930"
     },
     {
@@ -260,7 +250,7 @@ var DGF_DATA = {
       "commune": "Bois-D'Arcy",
       "lat": 48.80456615,
       "lon": 2.017967053,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78390"
     },
     {
@@ -281,14 +271,14 @@ var DGF_DATA = {
       "commune": "Boissy-Sans-Avoir",
       "lat": 48.82121767,
       "lon": 1.797922033,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
       "commune": "Bonnelles",
       "lat": 48.61895626,
       "lon": 2.029869383,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78830"
     },
     {
@@ -302,28 +292,28 @@ var DGF_DATA = {
       "commune": "Bouafle",
       "lat": 48.96017933,
       "lon": 1.897374256,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78410"
     },
     {
       "commune": "Bougival",
       "lat": 48.86348972,
       "lon": 2.137410026,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78380"
     },
     {
       "commune": "Boullay-les-Troux",
       "lat": 48.6766,
       "lon": 2.0526,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "91470"
     },
     {
       "commune": "Bourdonné",
       "lat": 48.75449432,
       "lon": 1.653230209,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78113"
     },
     {
@@ -351,7 +341,7 @@ var DGF_DATA = {
       "commune": "Buc",
       "lat": 48.77269065,
       "lon": 2.124966955,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78530"
     },
     {
@@ -365,7 +355,7 @@ var DGF_DATA = {
       "commune": "Bullion",
       "lat": 48.62409522,
       "lon": 1.983227632,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78830"
     },
     {
@@ -386,14 +376,14 @@ var DGF_DATA = {
       "commune": "Cernay-La-Ville",
       "lat": 48.66969938,
       "lon": 1.960778381,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78720"
     },
     {
       "commune": "Chambourcy",
       "lat": 48.89648475,
       "lon": 2.032879339,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78240"
     },
     {
@@ -407,14 +397,14 @@ var DGF_DATA = {
       "commune": "Chapet",
       "lat": 48.96830879,
       "lon": 1.938956807,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78130"
     },
     {
       "commune": "Châteaufort",
       "lat": 48.73909983,
       "lon": 2.095228818,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78117"
     },
     {
@@ -435,28 +425,28 @@ var DGF_DATA = {
       "commune": "Chavenay",
       "lat": 48.84833954,
       "lon": 1.982705197,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78450"
     },
     {
       "commune": "Chaville",
       "lat": 48.8073,
       "lon": 2.1903,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "92370"
     },
     {
       "commune": "Chevreuse",
       "lat": 48.70710165,
       "lon": 2.037385773,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78460"
     },
     {
       "commune": "Choisel",
       "lat": 48.67425508,
       "lon": 2.015278696,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78460"
     },
     {
@@ -470,7 +460,7 @@ var DGF_DATA = {
       "commune": "Clairefontaine-En-Yvelines",
       "lat": 48.61639966,
       "lon": 1.906426688,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78120"
     },
     {
@@ -484,7 +474,7 @@ var DGF_DATA = {
       "commune": "Condé-Sur-Vesgre",
       "lat": 48.73253319,
       "lon": 1.673398413,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78113"
     },
     {
@@ -498,7 +488,7 @@ var DGF_DATA = {
       "commune": "Courgent",
       "lat": 48.89567194,
       "lon": 1.659470287,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78790"
     },
     {
@@ -512,14 +502,14 @@ var DGF_DATA = {
       "commune": "Crespières",
       "lat": 48.88209349,
       "lon": 1.920846299,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78121"
     },
     {
       "commune": "Croissy-Sur-Seine",
       "lat": 48.87835244,
       "lon": 2.136043644,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78290"
     },
     {
@@ -533,21 +523,21 @@ var DGF_DATA = {
       "commune": "Dampierre-En-Yvelines",
       "lat": 48.70379586,
       "lon": 1.973145497,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78720"
     },
     {
       "commune": "Dannemarie",
       "lat": 48.76412619,
       "lon": 1.608102221,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78550"
     },
     {
       "commune": "Davron",
       "lat": 48.86371624,
       "lon": 1.947514443,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78810"
     },
     {
@@ -561,7 +551,7 @@ var DGF_DATA = {
       "commune": "Ecquevilly",
       "lat": 48.94585001,
       "lon": 1.920724868,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78920"
     },
     {
@@ -575,14 +565,14 @@ var DGF_DATA = {
       "commune": "Émancé",
       "lat": 48.59101478,
       "lon": 1.733915935,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
       "commune": "Épône",
       "lat": 48.94797473,
       "lon": 1.813365076,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78680"
     },
     {
@@ -603,7 +593,7 @@ var DGF_DATA = {
       "commune": "Feucherolles",
       "lat": 48.88011422,
       "lon": 1.97932065,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78810"
     },
     {
@@ -617,7 +607,7 @@ var DGF_DATA = {
       "commune": "Flexanville",
       "lat": 48.85527515,
       "lon": 1.742832344,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78910"
     },
     {
@@ -631,7 +621,7 @@ var DGF_DATA = {
       "commune": "Flins-Sur-Seine",
       "lat": 48.96766803,
       "lon": 1.873145439,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78410"
     },
     {
@@ -645,7 +635,7 @@ var DGF_DATA = {
       "commune": "Fontenay-Le-Fleury",
       "lat": 48.81738038,
       "lon": 2.046648365,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78330"
     },
     {
@@ -680,28 +670,28 @@ var DGF_DATA = {
       "commune": "Galluis",
       "lat": 48.79829995,
       "lon": 1.79231051,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
       "commune": "Gambais",
       "lat": 48.77946761,
       "lon": 1.676901706,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78950"
     },
     {
       "commune": "Gambaiseuil",
       "lat": 48.75660781,
       "lon": 1.724886919,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78490"
     },
     {
       "commune": "Garancières",
       "lat": 48.82352077,
       "lon": 1.758647201,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78890"
     },
     {
@@ -722,14 +712,14 @@ var DGF_DATA = {
       "commune": "Gazeran",
       "lat": 48.6338877,
       "lon": 1.777682367,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78125"
     },
     {
       "commune": "Gif-sur-Yvette",
       "lat": 48.6961,
       "lon": 2.1206,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "91190"
     },
     {
@@ -743,35 +733,35 @@ var DGF_DATA = {
       "commune": "Goupillières",
       "lat": 48.88068609,
       "lon": 1.767113818,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78770"
     },
     {
       "commune": "Goussonville",
       "lat": 48.92334326,
       "lon": 1.76673453,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78930"
     },
     {
       "commune": "Grandchamp",
       "lat": 48.71953749,
       "lon": 1.614313995,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78113"
     },
     {
       "commune": "Gressey",
       "lat": 48.83227395,
       "lon": 1.603284082,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78550"
     },
     {
       "commune": "Grosrouvre",
       "lat": 48.78036522,
       "lon": 1.756936258,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78490"
     },
     {
@@ -799,7 +789,7 @@ var DGF_DATA = {
       "commune": "Guyancourt",
       "lat": 48.77305613,
       "lon": 2.075795993,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78280"
     },
     {
@@ -813,28 +803,28 @@ var DGF_DATA = {
       "commune": "Hargeville",
       "lat": 48.89513957,
       "lon": 1.746682246,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78790"
     },
     {
       "commune": "Herbeville",
       "lat": 48.9028597,
       "lon": 1.89034309,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78580"
     },
     {
       "commune": "Hermeray",
       "lat": 48.65374544,
       "lon": 1.688377442,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
       "commune": "Houdan",
       "lat": 48.79813064,
       "lon": 1.596685264,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78550"
     },
     {
@@ -869,7 +859,7 @@ var DGF_DATA = {
       "commune": "Jouy-En-Josas",
       "lat": 48.76584402,
       "lon": 2.163630206,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78350"
     },
     {
@@ -883,7 +873,7 @@ var DGF_DATA = {
       "commune": "Jumeauville",
       "lat": 48.90691713,
       "lon": 1.783808359,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78580"
     },
     {
@@ -897,49 +887,49 @@ var DGF_DATA = {
       "commune": "L'Étang-La-Ville",
       "lat": 48.86732648,
       "lon": 2.060051116,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78620"
     },
     {
       "commune": "La Boissière-École",
       "lat": 48.68993998,
       "lon": 1.667717629,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
       "commune": "La Celle-Les-Bordes",
       "lat": 48.64203406,
       "lon": 1.945556231,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78720"
     },
     {
       "commune": "La Celle-Saint-Cloud",
       "lat": 48.8468575,
       "lon": 2.134464503,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78170"
     },
     {
       "commune": "La Falaise",
       "lat": 48.93709177,
       "lon": 1.825289736,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78410"
     },
     {
       "commune": "La Hauteville",
       "lat": 48.70466335,
       "lon": 1.626941411,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78113"
     },
     {
       "commune": "La Queue-Les-Yvelines",
       "lat": 48.80248809,
       "lon": 1.76827498,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78940"
     },
     {
@@ -967,7 +957,7 @@ var DGF_DATA = {
       "commune": "Le Chesnay-Rocquencourt",
       "lat": 48.82918974,
       "lon": 2.119982704,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78150"
     },
     {
@@ -988,28 +978,28 @@ var DGF_DATA = {
       "commune": "Le Pecq",
       "lat": 48.89373593,
       "lon": 2.105049587,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78230"
     },
     {
       "commune": "Le Perray-En-Yvelines",
       "lat": 48.69623833,
       "lon": 1.843383128,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78610"
     },
     {
       "commune": "Le Port-Marly",
       "lat": 48.8804765,
       "lon": 2.109136602,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78560"
     },
     {
       "commune": "Le Tartre-Gaudran",
       "lat": 48.69683161,
       "lon": 1.603669303,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78113"
     },
     {
@@ -1030,49 +1020,49 @@ var DGF_DATA = {
       "commune": "Le Vésinet",
       "lat": 48.89356646,
       "lon": 2.130152918,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78110"
     },
     {
       "commune": "Les Alluets-Le-Roi",
       "lat": 48.91398556,
       "lon": 1.915037039,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78580"
     },
     {
       "commune": "Les Bréviaires",
       "lat": 48.7213535,
       "lon": 1.816439875,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78610"
     },
     {
       "commune": "Les Clayes-Sous-Bois",
       "lat": 48.81876808,
       "lon": 1.983709666,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78340"
     },
     {
       "commune": "Les Essarts-Le-Roi",
       "lat": 48.71625049,
       "lon": 1.895377771,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78690"
     },
     {
       "commune": "Les Loges-En-Josas",
       "lat": 48.76216229,
       "lon": 2.139404226,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78350"
     },
     {
       "commune": "Les Mesnuls",
       "lat": 48.75444617,
       "lon": 1.834462107,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
@@ -1086,7 +1076,7 @@ var DGF_DATA = {
       "commune": "Lévis-Saint-Nom",
       "lat": 48.72689865,
       "lon": 1.936054195,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78320"
     },
     {
@@ -1128,7 +1118,7 @@ var DGF_DATA = {
       "commune": "Louveciennes",
       "lat": 48.85922844,
       "lon": 2.113553349,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78430"
     },
     {
@@ -1142,7 +1132,7 @@ var DGF_DATA = {
       "commune": "Magny-Les-Hameaux",
       "lat": 48.74102162,
       "lon": 2.052212985,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78114"
     },
     {
@@ -1170,56 +1160,56 @@ var DGF_DATA = {
       "commune": "Marcq",
       "lat": 48.86396289,
       "lon": 1.823801053,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78770"
     },
     {
       "commune": "Mareil-Le-Guyon",
       "lat": 48.79049767,
       "lon": 1.851508174,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
       "commune": "Mareil-Marly",
       "lat": 48.88054483,
       "lon": 2.076642414,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78750"
     },
     {
       "commune": "Mareil-Sur-Mauldre",
       "lat": 48.88912276,
       "lon": 1.874811843,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78124"
     },
     {
       "commune": "Marly-Le-Roi",
       "lat": 48.86500228,
       "lon": 2.091455371,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78160"
     },
     {
       "commune": "Marnes-la-Coquette",
       "lat": 48.8347,
       "lon": 2.175,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "92430"
     },
     {
       "commune": "Maule",
       "lat": 48.90746533,
       "lon": 1.8386516,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78580"
     },
     {
       "commune": "Maulette",
       "lat": 48.78349151,
       "lon": 1.615913848,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78550"
     },
     {
@@ -1240,7 +1230,7 @@ var DGF_DATA = {
       "commune": "Médan",
       "lat": 48.95457498,
       "lon": 1.987332834,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78670"
     },
     {
@@ -1254,7 +1244,7 @@ var DGF_DATA = {
       "commune": "Méré",
       "lat": 48.79584749,
       "lon": 1.820601612,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
@@ -1296,21 +1286,21 @@ var DGF_DATA = {
       "commune": "Millemont",
       "lat": 48.80799777,
       "lon": 1.72597673,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78940"
     },
     {
       "commune": "Milon-La-Chapelle",
       "lat": 48.72834196,
       "lon": 2.047056889,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78470"
     },
     {
       "commune": "Mittainville",
       "lat": 48.66276611,
       "lon": 1.635730295,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
@@ -1331,7 +1321,7 @@ var DGF_DATA = {
       "commune": "Montainville",
       "lat": 48.88004818,
       "lon": 1.852535617,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78124"
     },
     {
@@ -1359,21 +1349,21 @@ var DGF_DATA = {
       "commune": "Montfort-L'Amaury",
       "lat": 48.77178118,
       "lon": 1.808318036,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
       "commune": "Montigny-Le-Bretonneux",
       "lat": 48.77979386,
       "lon": 2.029914006,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78180"
     },
     {
       "commune": "Morainvilliers",
       "lat": 48.93332211,
       "lon": 1.945359174,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78630"
     },
     {
@@ -1387,21 +1377,21 @@ var DGF_DATA = {
       "commune": "Mulcent",
       "lat": 48.87864784,
       "lon": 1.65186895,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78790"
     },
     {
       "commune": "Neauphle-Le-Château",
       "lat": 48.81237454,
       "lon": 1.904884413,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78640"
     },
     {
       "commune": "Neauphle-Le-Vieux",
       "lat": 48.81563304,
       "lon": 1.858822856,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78640"
     },
     {
@@ -1415,14 +1405,14 @@ var DGF_DATA = {
       "commune": "Nézel",
       "lat": 48.9424504,
       "lon": 1.839272058,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78410"
     },
     {
       "commune": "Noisy-Le-Roi",
       "lat": 48.84622615,
       "lon": 2.054882082,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78590"
     },
     {
@@ -1443,28 +1433,28 @@ var DGF_DATA = {
       "commune": "Orcemont",
       "lat": 48.59716886,
       "lon": 1.809614202,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
       "commune": "Orgerus",
       "lat": 48.83716432,
       "lon": 1.696429099,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78910"
     },
     {
       "commune": "Orgeval",
       "lat": 48.91640556,
       "lon": 1.96955838,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78630"
     },
     {
       "commune": "Orphin",
       "lat": 48.57645772,
       "lon": 1.783195359,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
@@ -1478,14 +1468,14 @@ var DGF_DATA = {
       "commune": "Orvilliers",
       "lat": 48.85465638,
       "lon": 1.642493629,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78910"
     },
     {
       "commune": "Osmoy",
       "lat": 48.86402323,
       "lon": 1.717249724,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78910"
     },
     {
@@ -1506,21 +1496,21 @@ var DGF_DATA = {
       "commune": "Plaisir",
       "lat": 48.81252983,
       "lon": 1.946831162,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78370"
     },
     {
       "commune": "Poigny-La-Forêt",
       "lat": 48.68313235,
       "lon": 1.754059032,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78125"
     },
     {
       "commune": "Poissy",
       "lat": 48.92345551,
       "lon": 2.02741429,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78300"
     },
     {
@@ -1541,49 +1531,49 @@ var DGF_DATA = {
       "commune": "Prunay-En-Yvelines",
       "lat": 48.52636738,
       "lon": 1.804987236,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78660"
     },
     {
       "commune": "Prunay-Le-Temple",
       "lat": 48.85914252,
       "lon": 1.671785775,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78910"
     },
     {
       "commune": "Raizeux",
       "lat": 48.63651143,
       "lon": 1.689127545,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
       "commune": "Rambouillet",
       "lat": 48.65354427,
       "lon": 1.826407174,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78120"
     },
     {
       "commune": "Rennemoulin",
       "lat": 48.8329292,
       "lon": 2.042291328,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78590"
     },
     {
       "commune": "Richebourg",
       "lat": 48.8247914,
       "lon": 1.634739266,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78550"
     },
     {
       "commune": "Rochefort-En-Yvelines",
       "lat": 48.59207976,
       "lon": 1.979454598,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78730"
     },
     {
@@ -1625,7 +1615,7 @@ var DGF_DATA = {
       "commune": "Saint-Arnoult-En-Yvelines",
       "lat": 48.57272009,
       "lon": 1.93420571,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78730"
     },
     {
@@ -1639,35 +1629,35 @@ var DGF_DATA = {
       "commune": "Saint-Cyr-L'École",
       "lat": 48.80637258,
       "lon": 2.065521889,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78210"
     },
     {
       "commune": "Saint-Forget",
       "lat": 48.71287514,
       "lon": 1.997095588,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78720"
     },
     {
       "commune": "Saint-Germain-De-La-Grange",
       "lat": 48.83262868,
       "lon": 1.902382833,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78640"
     },
     {
       "commune": "Saint-Germain-En-Laye",
       "lat": 48.9372867,
       "lon": 2.09621214,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78100"
     },
     {
       "commune": "Saint-Hilarion",
       "lat": 48.62277128,
       "lon": 1.728669133,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78125"
     },
     {
@@ -1688,14 +1678,14 @@ var DGF_DATA = {
       "commune": "Saint-Lambert",
       "lat": 48.73392966,
       "lon": 2.006559236,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78470"
     },
     {
       "commune": "Saint-Léger-En-Yvelines",
       "lat": 48.73025921,
       "lon": 1.759907756,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78610"
     },
     {
@@ -1709,7 +1699,7 @@ var DGF_DATA = {
       "commune": "Saint-Martin-Des-Champs",
       "lat": 48.87797936,
       "lon": 1.719391256,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78790"
     },
     {
@@ -1723,7 +1713,7 @@ var DGF_DATA = {
       "commune": "Saint-Nom-La-Bretèche",
       "lat": 48.86315826,
       "lon": 2.018959834,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78860"
     },
     {
@@ -1737,7 +1727,7 @@ var DGF_DATA = {
       "commune": "Saint-Rémy-Lès-Chevreuse",
       "lat": 48.70405966,
       "lon": 2.079136651,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78470"
     },
     {
@@ -1758,21 +1748,21 @@ var DGF_DATA = {
       "commune": "Saulx-Marchais",
       "lat": 48.84604444,
       "lon": 1.837057716,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78650"
     },
     {
       "commune": "Senlisse",
       "lat": 48.68537925,
       "lon": 1.971804795,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78720"
     },
     {
       "commune": "Septeuil",
       "lat": 48.88791406,
       "lon": 1.68420089,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78790"
     },
     {
@@ -1793,14 +1783,14 @@ var DGF_DATA = {
       "commune": "Sonchamp",
       "lat": 48.58809418,
       "lon": 1.868745683,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78120"
     },
     {
       "commune": "Tacoignières",
       "lat": 48.83263442,
       "lon": 1.665301886,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78910"
     },
     {
@@ -1814,14 +1804,14 @@ var DGF_DATA = {
       "commune": "Thiverval-Grignon",
       "lat": 48.84408059,
       "lon": 1.932719641,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78850"
     },
     {
       "commune": "Thoiry",
       "lat": 48.87252683,
       "lon": 1.79817978,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78770"
     },
     {
@@ -1835,14 +1825,14 @@ var DGF_DATA = {
       "commune": "Toussus-Le-Noble",
       "lat": 48.7470419,
       "lon": 2.117699323,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78117"
     },
     {
       "commune": "Trappes",
       "lat": 48.77575295,
       "lon": 1.994017007,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78190"
     },
     {
@@ -1856,7 +1846,7 @@ var DGF_DATA = {
       "commune": "Vaucresson",
       "lat": 48.8362,
       "lon": 2.1718,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "92420"
     },
     {
@@ -1870,28 +1860,28 @@ var DGF_DATA = {
       "commune": "Vélizy-Villacoublay",
       "lat": 48.783874,
       "lon": 2.197389882,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78140"
     },
     {
       "commune": "Verneuil-Sur-Seine",
       "lat": 48.98697942,
       "lon": 1.962957365,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78480"
     },
     {
       "commune": "Vernouillet",
       "lat": 48.9651003,
       "lon": 1.974572079,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78540"
     },
     {
       "commune": "Versailles",
       "lat": 48.80227891,
       "lon": 2.117435264,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78000"
     },
     {
@@ -1905,14 +1895,14 @@ var DGF_DATA = {
       "commune": "Vicq",
       "lat": 48.82152818,
       "lon": 1.827623151,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78490"
     },
     {
       "commune": "Vieille-Église-En-Yvelines",
       "lat": 48.67010739,
       "lon": 1.874292749,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78125"
     },
     {
@@ -1926,14 +1916,14 @@ var DGF_DATA = {
       "commune": "Villennes-Sur-Seine",
       "lat": 48.93659818,
       "lon": 1.995860565,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78670"
     },
     {
       "commune": "Villepreux",
       "lat": 48.8311058,
       "lon": 2.012425971,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78450"
     },
     {
@@ -1947,35 +1937,35 @@ var DGF_DATA = {
       "commune": "Villiers-le-Bâcle",
       "lat": 48.7256,
       "lon": 2.1196,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "91190"
     },
     {
       "commune": "Villiers-Le-Mahieu",
       "lat": 48.85359411,
       "lon": 1.773897239,
-      "color": "orange",
+      "color": "jaune",
       "cp": "78770"
     },
     {
       "commune": "Villiers-Saint-Frédéric",
       "lat": 48.82037805,
       "lon": 1.882796596,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78640"
     },
     {
       "commune": "Viroflay",
       "lat": 48.80269591,
       "lon": 2.171320679,
-      "color": "orangefonce",
+      "color": "orange",
       "cp": "78220"
     },
     {
       "commune": "Voisins-Le-Bretonneux",
       "lat": 48.75885054,
       "lon": 2.048479471,
-      "color": "jaune",
+      "color": "verte",
       "cp": "78960"
     }
   ],

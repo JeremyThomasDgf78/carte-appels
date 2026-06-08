@@ -64,11 +64,6 @@
   .zbadge{ flex-shrink:0; display:inline-flex; align-items:center; font-size:13px; font-weight:700; padding:5px 14px; border-radius:14px; color:#fff; }
   .subv{ display:block; padding:6px 18px 0; font-size:13px; color:#1c7a3d; font-weight:700; }
   .bmention{ display:block; padding:4px 18px 0; font-size:13px; color:#1e63c9; font-weight:500; }
-  .qwarn{ display:block; margin:6px 18px 0; background:#FFF7DB; border:1px solid #F0C93C; border-radius:10px; padding:6px 12px; font-size:12.5px; font-weight:700; color:#7A5A00; line-height:1.4; }
-  #info.compact .icontent{ gap:8px; padding:8px 0; }
-  #info.compact .catbloc{ padding:6px 13px; }
-  #info.compact .iblocpro{ padding:8px 14px; }
-  #info.compact .ibtns{ padding-bottom:9px; }
   .catbloc{ border-radius:12px; padding:8px 13px; margin-bottom:12px; border:0.5px solid; }
   .catbloc.vis{ background:#F1EFE8; border-color:#D3D1C7; }
   .catbloc.nvis{ background:#EEEDFE; border-color:#CECBF6; }
@@ -245,7 +240,6 @@
   <div class="lrow" data-z="verte"><span class="ld" style="background:#28a745"></span>Verte<span class="cnt" id="c-verte"></span></div>
   <div class="lrow" data-z="jaune"><span class="ld" style="background:#ffc107"></span>Jaune<span class="cnt" id="c-jaune"></span></div>
   <div class="lrow" data-z="orange"><span class="ld" style="background:#fd7e14"></span>Orange<span class="cnt" id="c-orange"></span></div>
-  <div class="lrow" data-z="orangefonce"><span class="ld" style="background:#e03e1f"></span>Orange foncé<span class="cnt" id="c-orangefonce"></span></div>
   <div class="lrow" data-z="bleue"><span class="ld" style="background:#007bff"></span>Bleu<span class="cnt" id="c-bleue"></span></div>
   <div class="lrow" data-z="rouge"><span class="ld" style="background:#8a8f98"></span>Grise (hors secteur)<span class="cnt" id="c-rouge"></span></div>
   <div class="lrow" data-z="none" style="display:none;"><span class="ld" style="background:#c4c8cf"></span>Non classée<span class="cnt" id="c-none"></span></div>
@@ -416,9 +410,9 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="data.js"></script>
 <script>
-const ZCOLOR={verte:'#28a745',jaune:'#ffc107',orange:'#fd7e14',orangefonce:'#e03e1f',rouge:'#8a8f98',bleue:'#007bff',none:'#c4c8cf'};
-const ZNAME={verte:'Verte',jaune:'Jaune',orange:'Orange',orangefonce:'Orange foncé',rouge:'Grise — hors secteur',bleue:'Bleu — hors département',none:'Non classée'};
-const CN={verte:'Verte',jaune:'Jaune',orange:'Orange',orangefonce:'Orange foncé',bleue:'Bleu (hors dépt)',rouge:'Grise (hors secteur)'};
+const ZCOLOR={verte:'#28a745',jaune:'#ffc107',orange:'#fd7e14',rouge:'#8a8f98',bleue:'#007bff',none:'#c4c8cf'};
+const ZNAME={verte:'Verte',jaune:'Jaune',orange:'Orange',rouge:'Grise — hors secteur',bleue:'Bleu — hors département',none:'Non classée'};
+const CN={verte:'Verte',jaune:'Jaune',orange:'Orange',bleue:'Bleu (hors dépt)',rouge:'Grise (hors secteur)'};
 const communesCCHVC=["Chevreuse","Choisel","Dampierre-En-Yvelines","Le Mesnil-Saint-Denis","Lévis-Saint-Nom","Milon-La-Chapelle","Saint-Forget","Saint-Lambert-Des-Bois","Saint-Rémy-Lès-Chevreuse","Senlisse"];
 
 /* D = données de travail (modifiables et exportables) */
@@ -452,9 +446,9 @@ var pinMarker=null;
 function setPin(latlng){ if(pinMarker) map.removeLayer(pinMarker); pinMarker=L.marker(latlng,{icon:makePin(),interactive:false}).addTo(map); }
 
 const FILL_OPACITY=0.40;
-const counts={verte:0,jaune:0,orange:0,orangefonce:0,rouge:0,bleue:0,none:0};
+const counts={verte:0,jaune:0,orange:0,rouge:0,bleue:0,none:0};
 const hidden={};
-let layersByZone={verte:[],jaune:[],orange:[],orangefonce:[],rouge:[],bleue:[],none:[]};
+let layersByZone={verte:[],jaune:[],orange:[],rouge:[],bleue:[],none:[]};
 const layerByName={};
 
 function zoneOf(nom){ const c=byName[norm(nom)]; return c?c.color:'none'; }
@@ -501,7 +495,7 @@ function recolorAll(){
 }
 function refreshLegend(){
   let total=0;
-  ['verte','jaune','orange','orangefonce','rouge','bleue','none'].forEach(z=>{
+  ['verte','jaune','orange','rouge','bleue','none'].forEach(z=>{
     total+=counts[z];
     document.getElementById('c-'+z).textContent=counts[z]?counts[z]+' commune'+(counts[z]>1?'s':''):'';
   });
@@ -595,9 +589,6 @@ function openInfo(c){
   let meta='';
   if(c.color==='bleue') meta+='<span class="bmention">Hors département — intervention possible</span>';
   if(communesCCHVC.map(x=>x.toLowerCase()).includes(c.commune.toLowerCase())) meta+='<span class="subv">&#10003; Subvention CCHVC frelon asiatique</span>';
-  const isElancourt=norm(c.commune)===norm('Élancourt');
-  if(isElancourt) meta+='<span class="qwarn">&#9888; Si quartier Clef Saint-Pierre : appliquer la tarification JAUNE</span>';
-  document.getElementById('info').classList.toggle('compact',isElancourt);
   document.getElementById('iMeta').innerHTML=meta;
   let b='';
   if(isHors){ b='<div class="hors-big">&#9888; Hors secteur d\'intervention</div>'; }
@@ -627,7 +618,6 @@ document.getElementById('iTtc').addEventListener('input',function(){
   document.getElementById('iHt').textContent=isNaN(v)?'— €':(v/1.2).toFixed(2).replace('.',',')+' €';
 });
 function openInfoUnclassified(nom){
-  document.getElementById('info').classList.remove('compact');
   const titleEl=document.getElementById('iTitle');
   titleEl.textContent=nom;
   document.getElementById('iRoute').textContent='';
